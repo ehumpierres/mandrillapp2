@@ -62,7 +62,8 @@ def filterListings():
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	
 	response = Response(jsonObj)
-		
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
 	return response
 
 @app.route('/listings/<listingid>', methods = ['GET'])
@@ -85,7 +86,9 @@ def getListingById(listingid= None):
        	print "There was an unexpected error: "
 		
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-	response = Response(jsonObj)		
+	response = Response(jsonObj)	
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  	
 	return response
 	
 
