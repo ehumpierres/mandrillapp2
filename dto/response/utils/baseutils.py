@@ -16,7 +16,7 @@ class BaseUtils():
     UNEXPECTED_MESSAGE = "unexpected";  
 
     @staticmethod
-    def SetOKMessageDTO(dto):
+    def SetOKDTO(dto):
         dto.IsValid = BaseUtils.TRUE
         dto.Code = BaseUtils.OK_CODE
         dto.Message = BaseUtils.OK_MESSAGE  
