@@ -11,8 +11,18 @@ class BaseUtils():
     OK_CODE = "1";
     OK_MESSAGE = "";  
 
+    # unexpected
+    UNEXPECTED_CODE = "2";
+    UNEXPECTED_MESSAGE = "unexpected";  
+
     @staticmethod
     def SetOKMessageDTO(dto):
         dto.IsValid = BaseUtils.TRUE
         dto.Code = BaseUtils.OK_CODE
-        dto.Message = BaseUtils.OK_MESSAGE   
+        dto.Message = BaseUtils.OK_MESSAGE  
+        
+    @staticmethod
+    def SetUnexpectedErrorDTO(dto):
+        dto.IsValid = BaseUtils.FALSE
+        dto.Code = BaseUtils.UNEXPECTED_CODE
+        dto.Message = BaseUtils.UNEXPECTED_MESSAGE   
