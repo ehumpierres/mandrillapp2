@@ -45,8 +45,8 @@ def hello_world():
 ## TODO: THIS HAS TO BE A GET METHOD
 
 @app.route('/listings/filter', methods = ['POST'])
-def filterListings():
-	response = Response(jsonObj)
+def filterListings():	
+	reponseObj = Base()
 	try:
 		filtersDic = {}
 	
@@ -57,16 +57,15 @@ def filterListings():
 		# returns the list of data objects
 		filteredListingsList = list(filteredListingsCursors)  
 	
-		reponseObj = Base()
 		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
 		BaseUtils.SetOKDTO(reponseObj)	
 	
-		jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	except :
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
 	       	print "There was an unexpected error: "
 	
-
+	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+	response = Response(jsonObj)
 	response.headers.add('Access-Control-Allow-Origin', '*')
 	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
 	return response
