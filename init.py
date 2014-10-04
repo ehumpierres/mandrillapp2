@@ -48,7 +48,7 @@ def hello_world():
 def filterListings():	
 	reponseObj = Base()
 	try:
-		filtersDic = {}
+		filtersDic = {"bathroom":4}		
 	
 		listingsCollection = db['listings']
 	
