@@ -40,31 +40,65 @@ app = Flask(__name__)
 @app.route('/')
 def hello_world():
     return 'Hello World!'
-	
+
+
 ## TODO: THIS HAS TO BE A GET METHOD
+
 @app.route('/listings/filter', methods = ['POST'])
 def filterListings():
-	
-	filtersStr = request.form['filters']
-	filtersDic = jsonpickle.decode(filtersStr)
-	
-	listingsCollection = db['listings']
-	
-	filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
-	
-	# returns the list of data objects
-	filteredListingsList = list(filteredListingsCursors)  
-	
-	reponseObj = Base()
-	reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
-	BaseUtils.SetOKDTO(reponseObj)	
-	
-	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-	
 	response = Response(jsonObj)
+	try:
+		filtersDic = {}
+	
+		listingsCollection = db['listings']
+	
+		filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
+	
+		# returns the list of data objects
+		filteredListingsList = list(filteredListingsCursors)  
+	
+		reponseObj = Base()
+		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
+		BaseUtils.SetOKDTO(reponseObj)	
+	
+		jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+	except :
+   		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+	       	print "There was an unexpected error: "
+	
+
 	response.headers.add('Access-Control-Allow-Origin', '*')
 	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
 	return response
+
+"""
+def filterListings():
+	response = Response(jsonObj)
+	try:
+		filtersStr = request.form['filters']
+		filtersDic = jsonpickle.decode(filtersStr)
+	
+		listingsCollection = db['listings']
+	
+		filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
+	
+		# returns the list of data objects
+		filteredListingsList = list(filteredListingsCursors)  
+	
+		reponseObj = Base()
+		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
+		BaseUtils.SetOKDTO(reponseObj)	
+	
+		jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+	except :
+   		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+	       	print "There was an unexpected error: "
+	
+
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
+	return response
+"""
 
 @app.route('/listings/<listingid>', methods = ['GET'])
 def getListingById(listingid= None):
@@ -83,7 +117,7 @@ def getListingById(listingid= None):
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
    	except :
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
-       	print "There was an unexpected error: "
+	       	print "There was an unexpected error: "
 		
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)	
