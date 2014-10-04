@@ -50,7 +50,7 @@ def filterListings():
 	try:
 		filtersDic = {"bathroom":4}		
 	
-		listingsCollection = db['listings']
+		listingsCollection = None
 	
 		filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
 	
@@ -59,10 +59,10 @@ def filterListings():
 	
 		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
 		BaseUtils.SetOKDTO(reponseObj)	
-	
-	except :
+	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
+	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
-	       	print "There was an unexpected error: "
+	       	print "There was an unexpected error: " , str(e)
 	
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)
@@ -114,9 +114,9 @@ def getListingById(listingid= None):
 			reponseObj.Data = jsonpickle.decode(dumps(listingsObject))
 			BaseUtils.SetOKMessageDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
-   	except :
+   	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
-	       	print "There was an unexpected error: "
+	       	print "There was an unexpected error: " , str(e)
 		
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)	
