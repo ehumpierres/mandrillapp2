@@ -76,15 +76,103 @@ def filterListings():
 def savePreferences():	
 	reponseObj = Base()
 	try:
-		preference = dict()
-		for form in request.form:
-			preferencesStr = request.form[form]
+		hood_must_have = dict()
+		hood_delighter = dict()
+		unit_must_have = dict()
+		unit_delighter = dict()
+		information = dict()
+		db_dict = dict()
+		unit_count_m = 1
+		hood_count_m = 1
+		unit_count_d = 1
+		hood_count_d = 1
+		apt_type_count = 1
+
+		for field in request.form:
+			preferencesStr = request.form[field]
 			if preferencesStr:
-				print preferencesStr	
-				preference[form] = preferencesStr
+				if field[:5] == "Field":
+					field_number = field[5:]
+					field_number = int(field_number)
+					# Get hood Delighters
+					if field_number in range (843,855):
+						if hood_count_d < 4:
+							db_field = "hood_d"+str(hood_count_d)
+							hood_count_d += 1
+							hood_delighter[db_field] = preferencesStr
+					# Get hood Must-haves
+					elif field_number in range (943,949):
+						if hood_count_m < 4:
+							db_field = "hood_m"+str(hood_count_m)
+							hood_count_m += 1
+							unit_must_have[db_field] = preferencesStr
+					#Get Unit Delighters
+					elif field_number in range (1045,1057):
+						if unit_count_d < 4:
+							db_field = "unit_d"+str(unit_count_d)
+							unit_count_d += 1
+							unit_delighter[db_field] = preferencesStr
+					#Get Unit Must-haves
+					elif field_number in range (1145,1152):
+						if unit_count_m < 4:
+							db_field = "unit_m"+str(unit_count_m)
+							unit_count_m += 1
+							unit_must_have[db_field] = preferencesStr
+							print unit_must_have[db_field]
+					# Get apt type
+					elif field_number == 635:
+						db_field = "apt_type"+str(apt_type_count)
+						unit_count_m += 1
+						unit_must_have[db_field] = "room"
+					elif field_number == 434:
+						db_field = "apt_type"+str(apt_type_count)
+						unit_count_m += 1
+						unit_must_have[db_field] = "studio"
+					elif field_number == 535:
+						db_field = "apt_type"+str(apt_type_count)
+						unit_count_m += 1
+						unit_must_have[db_field] = "1bed"
+					elif field_number == 735:
+						db_field = "apt_type"+str(apt_type_count)
+						unit_count_m += 1
+						unit_must_have[db_field] = "2bed"
+					# Gather relevant informaion
+					elif field_number == 1:
+						information["firstname"] = preferencesStr
+					elif field_number == 2: 
+						information["lastname"] = preferencesStr
+					elif field_number == 5:
+						information["email"] = preferencesStr
+					elif field_number == 1248:
+						information["gender"] = preferencesStr
+						print information["gender"]
+					elif field_number == 316:
+						information["move_reason"] = preferencesStr
+					elif field_number == 1247:
+						information["importance"] = preferencesStr
+					elif field_number == 325:
+						information["location"] = preferencesStr
+					elif field_number == 836:
+						information["transportation"] = preferencesStr
+					elif field_number == 321:
+						information["budget"] = preferencesStr
+					elif field_number == 319:
+						information["movein"] = preferencesStr
+				elif field == "EntryId":
+					information["EntryId"] = preferencesStr
+				elif field == "DateUpdated":
+					information["DateUpdated"] = preferencesStr
+				elif field == "DateCreated":
+					information["DateCreated"] = preferencesStr
+
+		db_dict["information"] = information
+		db_dict["unit_must_have"] = unit_must_have
+		db_dict["unit_delighter"] = unit_delighter
+		db_dict["hood_must_have"] = hood_must_have
+		db_dict["hood_delighter"] = hood_delighter
 
 		preferencesCollection = db['preferences']
-		preferencesCollection.insert(preference)		
+		preferencesCollection.insert(db_dict)
 	
 		BaseUtils.SetOKDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
