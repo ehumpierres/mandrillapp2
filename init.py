@@ -105,7 +105,7 @@ def savePreferences():
 						if hood_count_m < 4:
 							db_field = "hood_m"+str(hood_count_m)
 							hood_count_m += 1
-							unit_must_have[db_field] = preferencesStr
+							hood_must_have[db_field] = preferencesStr
 					#Get Unit Delighters
 					elif field_number in range (1045,1057):
 						if unit_count_d < 4:
@@ -145,7 +145,6 @@ def savePreferences():
 						information["email"] = preferencesStr
 					elif field_number == 1248:
 						information["gender"] = preferencesStr
-						print information["gender"]
 					elif field_number == 316:
 						information["move_reason"] = preferencesStr
 					elif field_number == 1247:
