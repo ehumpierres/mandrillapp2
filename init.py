@@ -48,9 +48,10 @@ def hello_world():
 def filterListings():	
 	reponseObj = Base()
 	try:
-		filtersDic = {"bathroom":4}		
+		filtersStr = request.form['filters']
+		filtersDic = jsonpickle.decode(filtersStr)
 	
-		listingsCollection = None
+		listingsCollection = db['listings']
 	
 		filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
 	
@@ -58,6 +59,28 @@ def filterListings():
 		filteredListingsList = list(filteredListingsCursors)  
 	
 		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
+		BaseUtils.SetOKDTO(reponseObj)	
+	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
+	except Exception as e:
+   		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+	       	print "There was an unexpected error: " , str(e)
+	
+	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+	response = Response(jsonObj)
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
+	return response
+
+@app.route('/preferences', methods = ['POST'])
+def savePreferences():	
+	reponseObj = Base()
+	try:
+		preferencesStr = request.form['preferences']
+		preferencesDic = jsonpickle.decode(preferencesStr)
+	
+		preferencesCollection = db['preferences']
+		preferencesCollection.insert(preferencesDic)		
+	
 		BaseUtils.SetOKDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
 	except Exception as e:
