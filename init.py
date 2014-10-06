@@ -48,6 +48,7 @@ def hello_world():
 def filterListings():	
 	reponseObj = Base()
 	try:
+
 		filtersStr = request.form['filters']
 		filtersDic = jsonpickle.decode(filtersStr)
 	
@@ -75,11 +76,15 @@ def filterListings():
 def savePreferences():	
 	reponseObj = Base()
 	try:
-		preferencesStr = request.form['preferences']
-		preferencesDic = jsonpickle.decode(preferencesStr)
-	
+		preference = dict()
+		for form in request.form:
+			preferencesStr = request.form[form]
+			if preferencesStr:
+				print preferencesStr	
+				preference[form] = preferencesStr
+
 		preferencesCollection = db['preferences']
-		preferencesCollection.insert(preferencesDic)		
+		preferencesCollection.insert(preference)		
 	
 		BaseUtils.SetOKDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
