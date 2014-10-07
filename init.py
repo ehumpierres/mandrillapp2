@@ -9,6 +9,7 @@ from flask import Response
 #from flask.ext.cors import CORS
 #from flask.ext.mongoengine import MongoEngine
 
+from operator import itemgetter
 
 # json handling
 import jsonpickle
@@ -49,17 +50,56 @@ def filterListings():
 	reponseObj = Base()
 	try:
 
-		filtersStr = request.form['filters']
-		filtersDic = jsonpickle.decode(filtersStr)
-	
+		filtersStr = request.form['id']
+		filtersStr = int(filtersStr)
+
+		#filtersDic = jsonpickle.decode(filtersStr)
+
+		preferencesCollection = db['preferences']
+
+		entry = preferencesCollection.find_one({"information.EntryId" : filtersStr})
+
+		information = entry["information"]
+		unit_delighter = entry["unit_delighter"]
+		unit_must_have = entry["unit_must_have"]
+		hood_delighter = entry["hood_delighter"]
+		hood_must_have = entry["hood_must_have"]
+
 		listingsCollection = db['listings']
-	
-		filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
+
+		bed_range = []
+		for i in range (1,4):
+			field = "apt_type"+str(i)
+			if unit_must_have[field]:
+				if unit_must_have[field] == "2bed":
+					bed_range.append(2)
+				else:
+					bed_range.append(1)
+				break
+
+		# bedroom price filter
+
+		filteredListingsCursors = listingsCollection.find(
+			{
+				"price": {"$in": range(600,information["budget"])}
+				, "bedroom": {"$in": bed_range}
+			}
+		)
+		filteredListingsList = list(filteredListingsCursors)  
+
+		strings = ["deck", "renovated", "balcony", "modern", "hardwood", "updated", "sunlight"]
+
+		for listing in filteredListingsList:
+			listing["score"] = 0
+			for regex in strings:
+				if re.search(regex, listing["body"], flags=re.IGNORECASE):
+					listing["score"] += 10
+
+		finalList = sorted(filteredListingsList, key=itemgetter('score'), reverse=True)
 	
 		# returns the list of data objects
-		filteredListingsList = list(filteredListingsCursors)  
 	
-		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
+		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(finalList)),10)
 		BaseUtils.SetOKDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
 	except Exception as e:
@@ -154,11 +194,11 @@ def savePreferences():
 					elif field_number == 836:
 						information["transportation"] = preferencesStr
 					elif field_number == 321:
-						information["budget"] = preferencesStr
+						information["budget"] = int(preferencesStr)
 					elif field_number == 319:
 						information["movein"] = preferencesStr
 				elif field == "EntryId":
-					information["EntryId"] = preferencesStr
+					information["EntryId"] = int(preferencesStr)
 				elif field == "DateUpdated":
 					information["DateUpdated"] = preferencesStr
 				elif field == "DateCreated":
