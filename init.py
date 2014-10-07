@@ -89,8 +89,10 @@ def filterListings():
 
 		strings = ["deck", "renovated", "balcony", "modern", "hardwood", "updated", "sunlight"]
 
-		if unit_delighter["keywords"]:
+		if "keywords" in unit_delighter:
 			strings = unit_delighter["keywords"]
+
+		print strings
 		
 
 		for listing in filteredListingsList:
