@@ -194,7 +194,9 @@ def savePreferences():
 					elif field_number == 836:
 						information["transportation"] = preferencesStr
 					elif field_number == 321:
-						information["budget"] = int(preferencesStr)
+						budget = preferencesStr.split(".")
+						print budget
+						information["budget"] = int(preferencesStr[0])
 					elif field_number == 319:
 						information["movein"] = preferencesStr
 				elif field == "EntryId":
