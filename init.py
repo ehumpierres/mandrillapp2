@@ -264,8 +264,8 @@ def savePreferences():
 		db_dict["hood_must_have"] = hood_must_have
 		db_dict["hood_delighter"] = hood_delighter
 
-		# preferencesCollection = db['preferences']
-		# preferencesCollection.insert(db_dict)
+		preferencesCollection = db['preferences']
+		preferencesCollection.insert(db_dict)
 
 		fromadd = "concierge@socrex.com"
 		toadd = information["email"]
