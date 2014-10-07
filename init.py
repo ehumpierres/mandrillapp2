@@ -25,6 +25,11 @@ from dto.response.utils.baseutils import BaseUtils
 
 from persistence.mongodatabase import mongoDatabase
 
+# Import smtplib for the actual sending function
+import smtplib
+from email.MIMEMultipart import MIMEMultipart
+from email.MIMEText import MIMEText
+
 
 # load constants
 MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
@@ -259,8 +264,29 @@ def savePreferences():
 		db_dict["hood_must_have"] = hood_must_have
 		db_dict["hood_delighter"] = hood_delighter
 
-		preferencesCollection = db['preferences']
-		preferencesCollection.insert(db_dict)
+		# preferencesCollection = db['preferences']
+		# preferencesCollection.insert(db_dict)
+
+		fromadd = "concierge@socrex.com"
+		toadd = information["email"]
+		msg = MIMEMultipart()
+		msg['From'] = fromadd
+		msg['To'] = toadd
+		msg['Subject'] = "Test email"
+		body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://socrex-frontend.gopagoda.com/app/#/view2/"+str(information["EntryId"])
+		msg.attach(MIMEText(body, 'plain'))
+
+		# Send the message via our own SMTP server, but don't include the
+		# envelope header.
+		s = smtplib.SMTP('smtp.gmail.com:587')
+		s.ehlo()
+		s.starttls()
+		s.ehlo()
+		s.login(fromadd, "monaco123")
+		text = msg.as_string()
+		s.sendmail(fromadd, toadd, text)
+		s.quit()
+
 	
 		BaseUtils.SetOKDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
