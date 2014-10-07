@@ -89,6 +89,10 @@ def filterListings():
 
 		strings = ["deck", "renovated", "balcony", "modern", "hardwood", "updated", "sunlight"]
 
+		if unit_delighter["keywords"]:
+			strings = unit_delighter["keywords"]
+		
+
 		for listing in filteredListingsList:
 			listing["score"] = 0
 			for regex in strings:
@@ -117,9 +121,13 @@ def savePreferences():
 	reponseObj = Base()
 	try:
 		hood_must_have = dict()
+		hood_must_have["keywords"] = []
 		hood_delighter = dict()
+		hood_delighter["keywords"] = []
 		unit_must_have = dict()
+		unit_must_have["keywords"] = []
 		unit_delighter = dict()
+		unit_delighter["keywords"] = []
 		information = dict()
 		db_dict = dict()
 		unit_count_m = 1
@@ -149,9 +157,45 @@ def savePreferences():
 					#Get Unit Delighters
 					elif field_number in range (1045,1057):
 						if unit_count_d < 4:
-							db_field = "unit_d"+str(unit_count_d)
-							unit_count_d += 1
-							unit_delighter[db_field] = preferencesStr
+							if field_number == 1045:
+								unit_delighter["keywords"].append("hardwood floor")
+							elif field_number == 1046:
+								unit_delighter["keywords"].append("laundry in")
+							elif field_number == 1047:
+								unit_delighter["keywords"].append("good light") 
+								unit_delighter["keywords"].append("lighting")
+							elif field_number == 1048:
+								unit_delighter["keywords"].append("roof deck")
+								unit_delighter["keywords"].append("balcony")
+							elif field_number == 1049:
+								unit_delighter["keywords"].append("high cielings")
+							elif field_number == 1050:
+								unit_delighter["keywords"].append("renovated kitchen")
+								unit_delighter["keywords"].append("modern kitchen")
+							elif field_number == 1051:
+								unit_delighter["keywords"].append("huge")
+								unit_delighter["keywords"].append("walk-in closet")
+								unit_delighter["keywords"].append("storage space")
+							elif field_number == 1052:
+								unit_delighter["keywords"].append("gym")
+								unit_delighter["keywords"].append("pool")
+							elif field_number == 1053:
+								unit_delighter["keywords"].append("great view")
+							elif field_number == 1054:
+								unit_delighter["keywords"].append("modern")
+								unit_delighter["keywords"].append("new")
+								unit_delighter["keywords"].append("renovated")
+							elif field_number == 1055:
+								unit_delighter["keywords"].append("cieling windows")
+								unit_delighter["keywords"].append("fireplace")
+								unit_delighter["keywords"].append("french doors")
+							elif field_number == 1056:
+								unit_delighter["keywords"].append("loft")
+
+
+							# db_field = "unit_d"+str(unit_count_d)
+							# unit_count_d += 1
+							# unit_delighter[db_field] = preferencesStr
 					#Get Unit Must-haves
 					elif field_number in range (1145,1152):
 						if unit_count_m < 4:
