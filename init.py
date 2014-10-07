@@ -246,9 +246,7 @@ def savePreferences():
 						information["transportation"] = preferencesStr
 					elif field_number == 321:
 						budget = preferencesStr.split(".")
-						print budget
 						information["budget"] = int(budget[0])
-						print information["budget"]
 					elif field_number == 319:
 						information["movein"] = preferencesStr
 				elif field == "EntryId":
@@ -272,7 +270,7 @@ def savePreferences():
 		msg = MIMEMultipart()
 		msg['From'] = fromadd
 		msg['To'] = toadd
-		msg['Subject'] = "Test email"
+		msg['Subject'] = "Socrex - Concierge reply"
 		body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://socrex-frontend.gopagoda.com/app/#/view2/"+str(information["EntryId"])
 		msg.attach(MIMEText(body, 'plain'))
 
