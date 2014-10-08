@@ -105,6 +105,10 @@ def filterListings():
 			for regex in strings:
 				if re.search(regex, listing["body"], flags=re.IGNORECASE):
 					listing["score"] += 10
+			price = (information["budget"] - listing["price"]) / information["budget"]
+			price_score = price * 200
+			listing["score"] += price_score
+
 
 		finalList = sorted(filteredListingsList, key=itemgetter('score'), reverse=True)
 	
@@ -240,7 +244,7 @@ def savePreferences():
 						information["move_reason"] = preferencesStr
 					elif field_number == 1247:
 						information["importance"] = preferencesStr
-					elif field_number == 325:
+					elif field_number == 1250:
 						information["location"] = preferencesStr
 					elif field_number == 836:
 						information["transportation"] = preferencesStr
