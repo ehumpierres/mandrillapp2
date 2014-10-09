@@ -426,38 +426,12 @@ def sendEmailToContact():
     response.headers.add('Access-Control-Allow-Origin', '*')
     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
     return response
-    
-@app.route('/listings/sendemail', methods = ['POST'])
-def sendEmailToContact():
-    
-    reponseObj = Base()
-    
-    try:
-    	## instantiate email sender object
-        mailSenderObj = MailSender('smtp.gmail.com', 587, 'jhon@socrex.com' , '123456789@Socrex')
-        ## send email
-        mailSenderObj.sendEmail('jhon@socrex.com','jhonjairoroa87@gmail.com','subject test' , 'subject body')
-        ## email quit sender object
-        mailSenderObj.quit()
-        ## add ok code to dto
-        BaseUtils.SetOKDTO(reponseObj)
-    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
-    except Exception as e:
-        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
-        print "There was an unexpected error: " , str(e)
-        print traceback.format_exc()
-    
-    jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
-    response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
-    return response
 
 if __name__ == '__main__':
 	app.debug = True 
 	# enable to run in cloud9
-	hostip = os.environ['IP']
-	hostport = int(os.environ['PORT'])
-	app.run(host=hostip,port=hostport)
+	#hostip = os.environ['IP']
+	#hostport = int(os.environ['PORT'])
+	#app.run(host=hostip,port=hostport)
 	# enable to run in heroku
-	#app.run()
+	app.run()
