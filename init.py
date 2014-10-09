@@ -69,48 +69,85 @@ def filterListings():
 		unit_must_have = entry["unit_must_have"]
 		hood_delighter = entry["hood_delighter"]
 		hood_must_have = entry["hood_must_have"]
+		delimiters = []
+
+		if "keywords" in unit_delighter:
+			udelighters = unit_delighter["keywords"]
+
+		if "keywords" in unit_must_have:
+			umust_haves = unit_must_have["keywords"]
 
 		listingsCollection = db['listings']
 
 		bed_range = []
-		for i in range (1,4):
+		for i in range(1,4):
 			field = "apt_type"+str(i)
-			if unit_must_have[field]:
+			if field in unit_must_have:
 				if unit_must_have[field] == "2bed":
 					bed_range.append(2)
-				else:
+				elif unit_must_have[field] == "1bed":
 					bed_range.append(1)
-				break
+				elif unit_must_have[field] == "studio":
+					#Add case for studio			
+					bed_range.append(-1)
+					bed_range.append(0)
+					bed_range.append(1)
+				else:
+					# Add case for roomate
+					bed_range.append(-2)
+					bed_range.append(0)
+					bed_range.append(1)
+
+		if -2 not in bed_range:
+			delimiters.append("roommate")
+			delimiters.append("by the room")
+		if -1 not in bed_range:
+			delimiters.append("studio")
+		if -2 or 2 not in bed_range:
+			delimiters.append("bedrooms")
+			delimiters.append("bathrooms")
 
 		# bedroom price filter
 
 		filteredListingsCursors = listingsCollection.find(
 			{
-				"price": {"$in": range(600,information["budget"])}
+				"price": {"$in": range(800,information["budget"])}
 				, "bedroom": {"$in": bed_range}
 			}
 		)
 		filteredListingsList = list(filteredListingsCursors)  
 
-		strings = ["deck", "renovated", "balcony", "modern", "hardwood", "updated", "sunlight"]
-
-		if "keywords" in unit_delighter:
-			strings = unit_delighter["keywords"]
-
-		print strings
 		
 
+		deleted = False
+		final_filter = []
+		print delimiters
+
 		for listing in filteredListingsList:
-			listing["score"] = 0
-			for regex in strings:
-				if re.search(regex, listing["body"], flags=re.IGNORECASE):
-					listing["score"] += 10
-			price = (information["budget"] - listing["price"]) / information["budget"]
-			price_score = price * 200
-			listing["score"] += price_score
+			if delimiters:
+				delim = "|".join(delimiters)
+				if not re.search(delim, listing["body"], flags=re.IGNORECASE):
+					# if re.search(regex, listing["body"], flags=re.IGNORECASE):
+					listing["score"] = 0
+					for regex in udelighters:
+						if re.search(regex, listing["body"], flags=re.IGNORECASE):
+							listing["score"] += 10
+					price = float(information["budget"] - listing["price"]) / float(information["budget"])
+					price_score = price * 150.00
+					listing["score"] += price_score
+					final_filter.append(listing)
+			else: 
+				listing["score"] = 0
+				for regex in udelighters:
+					if re.search(regex, listing["body"], flags=re.IGNORECASE):
+						listing["score"] += 10
+				price = float(information["budget"] - listing["price"]) / float(information["budget"])
+				price_score = price * 150.00
+				listing["score"] += price_score
+				final_filter.append(listing)
 
 
-		finalList = sorted(filteredListingsList, key=itemgetter('score'), reverse=True)
+		finalList = sorted(final_filter, key=itemgetter('score'), reverse=True)
 	
 		# returns the list of data objects
 	
@@ -169,7 +206,7 @@ def savePreferences():
 					elif field_number in range (1045,1057):
 						if unit_count_d < 4:
 							if field_number == 1045:
-								unit_delighter["keywords"].append("hardwood floor")
+								unit_delighter["keywords"].append("hardwood")
 							elif field_number == 1046:
 								unit_delighter["keywords"].append("laundry in")
 							elif field_number == 1047:
@@ -180,6 +217,7 @@ def savePreferences():
 								unit_delighter["keywords"].append("balcony")
 							elif field_number == 1049:
 								unit_delighter["keywords"].append("high cielings")
+								unit_delighter["keywords"].append("spacious")
 							elif field_number == 1050:
 								unit_delighter["keywords"].append("renovated kitchen")
 								unit_delighter["keywords"].append("modern kitchen")
@@ -191,11 +229,14 @@ def savePreferences():
 								unit_delighter["keywords"].append("gym")
 								unit_delighter["keywords"].append("pool")
 							elif field_number == 1053:
-								unit_delighter["keywords"].append("great view")
+								unit_delighter["keywords"].append("view")
+								unit_delighter["keywords"].append("skyline")
+								unit_delighter["keywords"].append("waterfront")
 							elif field_number == 1054:
 								unit_delighter["keywords"].append("modern")
 								unit_delighter["keywords"].append("new")
 								unit_delighter["keywords"].append("renovated")
+								unit_delighter["keywords"].append("newly")
 							elif field_number == 1055:
 								unit_delighter["keywords"].append("cieling windows")
 								unit_delighter["keywords"].append("fireplace")
@@ -213,16 +254,17 @@ def savePreferences():
 							db_field = "unit_m"+str(unit_count_m)
 							unit_count_m += 1
 							unit_must_have[db_field] = preferencesStr
-							print unit_must_have[db_field]
 					# Get apt type
 					elif field_number == 635:
 						db_field = "apt_type"+str(apt_type_count)
 						unit_count_m += 1
-						unit_must_have[db_field] = "room"
+						unit_must_have[db_field] = "sublet"
+						unit_must_have["keywords"].append("roomate")
 					elif field_number == 434:
 						db_field = "apt_type"+str(apt_type_count)
 						unit_count_m += 1
 						unit_must_have[db_field] = "studio"
+						unit_must_have["keywords"].append("studio")
 					elif field_number == 535:
 						db_field = "apt_type"+str(apt_type_count)
 						unit_count_m += 1
