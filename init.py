@@ -32,6 +32,7 @@ from email.MIMEMultipart import MIMEMultipart
 from email.MIMEText import MIMEText
 
 from business.utils.mailsender import MailSender
+from business.implementations.implementations import Implementations
 
 
 # load constants
@@ -41,6 +42,7 @@ MONGO_DB = "app30172457"
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
+newImplementation = Implementations()
 
 
 # init flask app
@@ -401,20 +403,90 @@ def getListingById(listingid= None):
 	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  	
 	return response
 	
-@app.route('/listings/sendemail', methods = ['POST'])
-def sendEmailToContact():
+@app.route('/listing/<listingid>/user/<useremail>/sendemail', methods = ['POST'])
+def sendEmailToContact(listingid= None, useremail=None ):
     
     reponseObj = Base()
     
     try:
-    	## instantiate email sender object
-        mailSenderObj = MailSender('smtp.gmail.com', 587, 'jhon@socrex.com' , '123456789@Socrex')
-        ## send email
-        mailSenderObj.sendEmail('jhon@socrex.com','jhonjairoroa87@gmail.com','subject test' , 'subject body')
-        ## email quit sender object
-        mailSenderObj.quit()
-        ## add ok code to dto
-        BaseUtils.SetOKDTO(reponseObj)
+    	isSuccessful = newImplementation.sendEmailToContact(listingid, useremail)
+    	if isSuccessful:
+    		BaseUtils.SetOKDTO(reponseObj)
+    	else:
+    		## todo: implement code for not nullable listingid or  useremail
+    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+        print "There was an unexpected error: " , str(e)
+        print traceback.format_exc()
+    
+    jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+    response = Response(jsonObj)    
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    return response
+
+@app.route('/listing/<listingid>/user/<useremail>/verifyavailability', methods = ['POST'])
+def verifyListingAvailability(listingid= None, useremail=None ):
+    
+    reponseObj = Base()
+    
+    try:
+    	isSuccessful = newImplementation.verifyListingAvailability(listingid, useremail)
+    	if isSuccessful:
+    		BaseUtils.SetOKDTO(reponseObj)
+    	else:
+    		## todo: implement code for not nullable listingid or  useremail
+    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+        print "There was an unexpected error: " , str(e)
+        print traceback.format_exc()
+    
+    jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+    response = Response(jsonObj)    
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    return response
+
+@app.route('/listing/<listingid>/user/<useremail>/expertreview', methods = ['POST'])
+def expertReview(listingid= None, useremail=None ):
+    
+    reponseObj = Base()
+    
+    try:
+    	isSuccessful = newImplementation.expertReview(listingid, useremail)
+    	if isSuccessful:
+    		BaseUtils.SetOKDTO(reponseObj)
+    	else:
+    		## todo: implement code for not nullable listingid or  useremail
+    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+        print "There was an unexpected error: " , str(e)
+        print traceback.format_exc()
+    
+    jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+    response = Response(jsonObj)    
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    return response
+
+@app.route('/listing/<listingid>/user/<useremail>/virtualtour', methods = ['POST'])
+def virtualTour(listingid= None, useremail=None ):
+    
+    reponseObj = Base()
+    
+    try:
+    	isSuccessful = newImplementation.virtualTour(listingid, useremail)
+    	if isSuccessful:
+    		BaseUtils.SetOKDTO(reponseObj)
+    	else:
+    		## todo: implement code for not nullable listingid or  useremail
+    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
@@ -430,8 +502,8 @@ def sendEmailToContact():
 if __name__ == '__main__':
 	app.debug = True 
 	# enable to run in cloud9
-	#hostip = os.environ['IP']
-	#hostport = int(os.environ['PORT'])
-	#app.run(host=hostip,port=hostport)
+	hostip = os.environ['IP']
+	hostport = int(os.environ['PORT'])
+	app.run(host=hostip,port=hostport)
 	# enable to run in heroku
-	app.run()
+	#app.run()
