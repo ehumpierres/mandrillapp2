@@ -53,7 +53,7 @@ def hello_world():
     return 'Hello World!'
 
 
-## TODO: THIS HAS TO BE A GET METHOD
+# Filter entries based off of user preferences
 
 @app.route('/listings/filter', methods = ['POST'])
 def filterListings():	
@@ -66,6 +66,9 @@ def filterListings():
 		#filtersDic = jsonpickle.decode(filtersStr)
 
 		preferencesCollection = db['preferences']
+		listingsCollection = db['listings']
+		hoodsCollection = db['hoods']
+
 
 		entry = preferencesCollection.find_one({"information.EntryId" : filtersStr})
 
@@ -74,82 +77,100 @@ def filterListings():
 		unit_must_have = entry["unit_must_have"]
 		hood_delighter = entry["hood_delighter"]
 		hood_must_have = entry["hood_must_have"]
+
 		delimiters = []
+
+		if "rooms" in unit_must_have.keys():
+			bed_range = unit_must_have["rooms"]
+		else:
+			bed_range = range(0,4)
+
 		udelighters = []
-		if "keywords" in unit_delighter:
+		if "keywords" in unit_delighter.keys():
 			udelighters = unit_delighter["keywords"]
 
-		if "keywords" in unit_must_have:
+		umust_haves = []
+		if "keywords" in unit_must_have.keys():
 			umust_haves = unit_must_have["keywords"]
 
-		listingsCollection = db['listings']
+		hmust_haves = []
+		if "keywords" in hood_must_have.keys():
+			hmust_haves = hood_must_have["keywords"]
 
-		bed_range = []
-		for i in range(1,4):
-			field = "apt_type"+str(i)
-			if field in unit_must_have:
-				if unit_must_have[field] == "2bed":
-					bed_range.append(2)
-				elif unit_must_have[field] == "1bed":
-					bed_range.append(1)
-				elif unit_must_have[field] == "studio":
-					#Add case for studio			
-					bed_range.append(-1)
-					bed_range.append(0)
-					bed_range.append(1)
-				else:
-					# Add case for roomate
-					bed_range.append(-2)
-					bed_range.append(0)
-					bed_range.append(1)
+		hdelighters = []
+		if "keywords" in hood_delighter.keys():
+			hdelighters = hood_delighter["keywords"]
 
-		if -2 not in bed_range:
-			delimiters.append("roommate")
-			delimiters.append("by the room")
-		if -1 not in bed_range:
-			delimiters.append("studio")
-		if -2 or 2 not in bed_range:
-			delimiters.append("bedrooms")
-			delimiters.append("bathrooms")
+		unit_query = {
+					"price": {"$in": range(800,information["budget"])}
+					, "bedroom": {"$in": bed_range}
+				}
+		for must_have in umust_haves:
+			unit_query[must_have] = 1
+			print unit_query[must_have]
 
-		# bedroom price filter
 
-		filteredListingsCursors = listingsCollection.find(
-			{
-				"price": {"$in": range(800,information["budget"])}
-				, "bedroom": {"$in": bed_range}
-			}
-		)
-		filteredListingsList = list(filteredListingsCursors)  
+		filteredListingsCursors = listingsCollection.find(unit_query)
+		filteredListingsList = list(filteredListingsCursors)
 
-		
-
-		deleted = False
 		final_filter = []
-		print delimiters
 
 		for listing in filteredListingsList:
-			if delimiters:
-				delim = "|".join(delimiters)
-				if not re.search(delim, listing["body"], flags=re.IGNORECASE):
-					# if re.search(regex, listing["body"], flags=re.IGNORECASE):
-					listing["score"] = 0
-					for regex in udelighters:
-						if re.search(regex, listing["body"], flags=re.IGNORECASE):
-							listing["score"] += 10
-					price = float(information["budget"] - listing["price"]) / float(information["budget"])
-					price_score = price * 150.00
-					listing["score"] += price_score
-					final_filter.append(listing)
-			else: 
+
+			listing_hood = listing["neighborhood"]
+			hood_query = {'_id': ObjectId(listing_hood["_id"])}
+			hood = hoodsCollection.find_one(hood_query)
+			passed_musthaves = True
+			print hmust_haves
+			for must_have in hmust_haves:
+				if hood[must_have] != 1:
+					passed_musthaves = False
+			if passed_musthaves:
 				listing["score"] = 0
-				for regex in udelighters:
-					if re.search(regex, listing["body"], flags=re.IGNORECASE):
-						listing["score"] += 10
+				print udelighters
+				for delighter in udelighters:
+					if listing[delighter] == 1:
+						listing["score"] += 20
+				print hdelighters
+				for delighter in hdelighters:
+					if hood[delighter] == 1:
+						listing["score"] += 20
+
 				price = float(information["budget"] - listing["price"]) / float(information["budget"])
-				price_score = price * 150.00
-				listing["score"] += price_score
-				final_filter.append(listing)
+	 			price_score = price * 150.00
+ 				listing["score"] += price_score
+ 				final_filter.append(listing)
+
+
+
+
+
+		# deleted = False
+		# final_filter = []
+		# print delimiters
+
+		# for listing in filteredListingsList:
+		# 	if delimiters:
+		# 		delim = "|".join(delimiters)
+		# 		if not re.search(delim, listing["body"], flags=re.IGNORECASE):
+		# 			# if re.search(regex, listing["body"], flags=re.IGNORECASE):
+		# 			listing["score"] = 0
+		# 			for regex in udelighters:
+		# 				if re.search(regex, listing["body"], flags=re.IGNORECASE):
+		# 					listing["score"] += 10
+		# 			price = float(information["budget"] - listing["price"]) / float(information["budget"])
+		# 			price_score = price * 150.00
+		# 			listing["score"] += price_score
+		# 			final_filter.append(listing)
+		# 	else: 
+		# 		listing["score"] = 0
+		# 		for regex in udelighters:
+		# 			if re.search(regex, listing["body"], flags=re.IGNORECASE):
+		# 				listing["score"] += 10
+		# 		price = float(information["budget"] - listing["price"]) / float(information["budget"])
+		# 		price_score = price * 150.00
+		# 		listing["score"] += price_score
+		# 		final_filter.append(listing)
 
 
 		finalList = sorted(final_filter, key=itemgetter('score'), reverse=True)
@@ -168,6 +189,10 @@ def filterListings():
 	response.headers.add('Access-Control-Allow-Origin', '*')
 	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
 	return response
+
+
+
+# Capture User preferences call (Wufoo form for now)
 
 @app.route('/preferences', methods = ['POST'])
 def savePreferences():	
@@ -270,10 +295,10 @@ def savePreferences():
 								unit_must_have["keywords"].append("parking")
 					# Get apt type
 					elif field_number == 635:
-						unit_must_have["rooms"] = range(1,4)
+						unit_must_have["rooms"] = range(1,5)
 						unit_must_have["keywords"].append("sublet_roomate")
 					elif field_number == 434:
-						unit_must_have["rooms"] = range(0,1)
+						unit_must_have["rooms"] = range(0,2)
 						unit_must_have["keywords"].append("studio")
 					elif field_number == 535:
 						unit_must_have["rooms"] = [1]
