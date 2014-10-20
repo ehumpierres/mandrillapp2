@@ -193,86 +193,87 @@ def savePreferences():
 					# Get hood Delighters
 					if field_number in range (843,855):
 						if hood_count_d < 4:
-							db_field = "hood_d"+str(hood_count_d)
-							hood_count_d += 1
-							hood_delighter[db_field] = preferencesStr
+							if field_number == 843:
+								hood_delighter["keywords"].append("Locales_good")
+							elif field_number == 844:
+								hood_delighter["keywords"].append("Parks")
+							elif field_number == 845:
+								hood_delighter["keywords"].append("Walkable")
+							elif field_number == 847:
+								hood_delighter["keywords"].append("Family")
+							elif field_number == 848:
+								hood_delighter["keywords"].append("Student_vibe")
+							elif field_number == 849:
+								hood_delighter["keywords"].append("Young_pro")
+							elif field_number == 850:
+								hood_delighter["keywords"].append("Quiet")
+							elif field_number == 852:
+								hood_delighter["keywords"].append("Classic")
+							elif field_number == 854:
+								hood_delighter["keywords"].append("Modern")
+
 					# Get hood Must-haves
-					elif field_number in range (943,949):
+					elif field_number in range (943,947):
 						if hood_count_m < 4:
-							db_field = "hood_m"+str(hood_count_m)
-							hood_count_m += 1
-							hood_must_have[db_field] = preferencesStr
+							if field_number == 943:
+								hood_must_have["keywords"].append("Near_action")
+							elif field_number == 944:
+								hood_must_have["keywords"].append("Safe")
+							elif field_number == 945:
+								hood_must_have["keywords"].append("Easy_transport")
+							elif field_number == 946:
+								hood_must_have["keywords"].append("Parking")
+
 					#Get Unit Delighters
 					elif field_number in range (1045,1057):
 						if unit_count_d < 4:
 							if field_number == 1045:
 								unit_delighter["keywords"].append("hardwood")
 							elif field_number == 1046:
-								unit_delighter["keywords"].append("laundry in")
+								unit_delighter["keywords"].append("laundry")
 							elif field_number == 1047:
-								unit_delighter["keywords"].append("good light") 
-								unit_delighter["keywords"].append("lighting")
+								unit_delighter["keywords"].append("lighting") 
 							elif field_number == 1048:
-								unit_delighter["keywords"].append("roof deck")
-								unit_delighter["keywords"].append("balcony")
+								unit_delighter["keywords"].append("deck_balcony")
 							elif field_number == 1049:
-								unit_delighter["keywords"].append("high cielings")
-								unit_delighter["keywords"].append("spacious")
+								unit_delighter["keywords"].append("cieling")
 							elif field_number == 1050:
-								unit_delighter["keywords"].append("renovated kitchen")
-								unit_delighter["keywords"].append("modern kitchen")
+								unit_delighter["keywords"].append("kitchen")
 							elif field_number == 1051:
-								unit_delighter["keywords"].append("huge")
-								unit_delighter["keywords"].append("walk-in closet")
-								unit_delighter["keywords"].append("storage space")
+								unit_delighter["keywords"].append("spacing")
 							elif field_number == 1052:
-								unit_delighter["keywords"].append("gym")
-								unit_delighter["keywords"].append("pool")
+								unit_delighter["keywords"].append("ameneties")
 							elif field_number == 1053:
 								unit_delighter["keywords"].append("view")
-								unit_delighter["keywords"].append("skyline")
-								unit_delighter["keywords"].append("waterfront")
 							elif field_number == 1054:
 								unit_delighter["keywords"].append("modern")
-								unit_delighter["keywords"].append("new")
-								unit_delighter["keywords"].append("renovated")
-								unit_delighter["keywords"].append("newly")
 							elif field_number == 1055:
-								unit_delighter["keywords"].append("cieling windows")
-								unit_delighter["keywords"].append("fireplace")
-								unit_delighter["keywords"].append("french doors")
+								unit_delighter["keywords"].append("classic")
 							elif field_number == 1056:
 								unit_delighter["keywords"].append("loft")
 
-
-							# db_field = "unit_d"+str(unit_count_d)
-							# unit_count_d += 1
-							# unit_delighter[db_field] = preferencesStr
 					#Get Unit Must-haves
-					elif field_number in range (1145,1152):
+					elif field_number in range (1145,1151):
 						if unit_count_m < 4:
-							db_field = "unit_m"+str(unit_count_m)
-							unit_count_m += 1
-							unit_must_have[db_field] = preferencesStr
+							if field_number == 1145:
+								unit_must_have["keywords"].append("pet")
+							elif field_number == 1146:
+								unit_must_have["keywords"].append("spacing")
+							elif field_number == 1147:
+								unit_must_have["keywords"].append("lighting")
+							elif field_number == 1150:
+								unit_must_have["keywords"].append("parking")
 					# Get apt type
 					elif field_number == 635:
-						db_field = "apt_type"+str(apt_type_count)
-						unit_count_m += 1
-						unit_must_have[db_field] = "sublet"
-						unit_must_have["keywords"].append("roomate")
+						unit_must_have["rooms"] = range(1,4)
+						unit_must_have["keywords"].append("sublet_roomate")
 					elif field_number == 434:
-						db_field = "apt_type"+str(apt_type_count)
-						unit_count_m += 1
-						unit_must_have[db_field] = "studio"
+						unit_must_have["rooms"] = range(0,1)
 						unit_must_have["keywords"].append("studio")
 					elif field_number == 535:
-						db_field = "apt_type"+str(apt_type_count)
-						unit_count_m += 1
-						unit_must_have[db_field] = "1bed"
+						unit_must_have["rooms"] = [1]
 					elif field_number == 735:
-						db_field = "apt_type"+str(apt_type_count)
-						unit_count_m += 1
-						unit_must_have[db_field] = "2bed"
+						unit_must_have["rooms"] = [2]
 					# Gather relevant informaion
 					elif field_number == 1:
 						information["firstname"] = preferencesStr
@@ -317,7 +318,7 @@ def savePreferences():
 		msg['From'] = fromadd
 		msg['To'] = toadd
 		msg['Subject'] = "Socrex - Concierge reply"
-		body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://socrex-frontend.gopagoda.com/app/#/view2/"+str(information["EntryId"])
+		body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://frontend-socrex-stage.herokuapp.com/#/listings/filter/"+str(information["EntryId"])
 		msg.attach(MIMEText(body, 'plain'))
 
 		# Send the message via our own SMTP server, but don't include the
