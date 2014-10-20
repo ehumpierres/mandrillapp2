@@ -461,7 +461,7 @@ def virtualTour(listingid= None, useremail=None ):
     return response
 
 @app.route('/listing/<listingid>/user/<useremail>/listingdetails', methods = ['POST'])
-def virtualTour(listingid= None, useremail=None ):
+def listingDetails(listingid= None, useremail=None ):
     
     reponseObj = Base()
     
