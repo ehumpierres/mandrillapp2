@@ -107,7 +107,6 @@ def filterListings():
 				}
 		for must_have in umust_haves:
 			unit_query[must_have] = 1
-			print unit_query[must_have]
 
 
 		filteredListingsCursors = listingsCollection.find(unit_query)
@@ -121,17 +120,14 @@ def filterListings():
 			hood_query = {'_id': ObjectId(listing_hood["_id"])}
 			hood = hoodsCollection.find_one(hood_query)
 			passed_musthaves = True
-			print hmust_haves
 			for must_have in hmust_haves:
 				if hood[must_have] != 1:
 					passed_musthaves = False
 			if passed_musthaves:
 				listing["score"] = 0
-				print udelighters
 				for delighter in udelighters:
 					if listing[delighter] == 1:
 						listing["score"] += 20
-				print hdelighters
 				for delighter in hdelighters:
 					if hood[delighter] == 1:
 						listing["score"] += 20
@@ -141,43 +137,11 @@ def filterListings():
  				listing["score"] += price_score
  				final_filter.append(listing)
 
-
-
-
-
-		# deleted = False
-		# final_filter = []
-		# print delimiters
-
-		# for listing in filteredListingsList:
-		# 	if delimiters:
-		# 		delim = "|".join(delimiters)
-		# 		if not re.search(delim, listing["body"], flags=re.IGNORECASE):
-		# 			# if re.search(regex, listing["body"], flags=re.IGNORECASE):
-		# 			listing["score"] = 0
-		# 			for regex in udelighters:
-		# 				if re.search(regex, listing["body"], flags=re.IGNORECASE):
-		# 					listing["score"] += 10
-		# 			price = float(information["budget"] - listing["price"]) / float(information["budget"])
-		# 			price_score = price * 150.00
-		# 			listing["score"] += price_score
-		# 			final_filter.append(listing)
-		# 	else: 
-		# 		listing["score"] = 0
-		# 		for regex in udelighters:
-		# 			if re.search(regex, listing["body"], flags=re.IGNORECASE):
-		# 				listing["score"] += 10
-		# 		price = float(information["budget"] - listing["price"]) / float(information["budget"])
-		# 		price_score = price * 150.00
-		# 		listing["score"] += price_score
-		# 		final_filter.append(listing)
-
-
 		finalList = sorted(final_filter, key=itemgetter('score'), reverse=True)
 	
 		# returns the list of data objects
 	
-		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(finalList)),10)
+		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),len(finalList), information["email"])
 		BaseUtils.SetOKDTO(reponseObj)	
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
 	except Exception as e:
