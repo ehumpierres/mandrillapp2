@@ -81,5 +81,18 @@ class Implementations():
 	        returnSuccess = True
 	        
         return returnSuccess
+
+    def listingDetails(self, listingid= None, useremail=None ):
+        returnSuccess = False
+        
+        if listingid is not None and useremail is not None:
+            
+            # save hit in the listing option collection
+            listingOptionCollection = ListingOptions(self.__db__)
+            listingOptionCollection.saveListingOptionClick(listingid,useremail,"listingdetails")
+            
+            returnSuccess = True
+            
+        return returnSuccess
         
         

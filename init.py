@@ -339,35 +339,6 @@ def savePreferences():
 	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
 	return response
 
-"""
-def filterListings():
-	response = Response(jsonObj)
-	try:
-		filtersStr = request.form['filters']
-		filtersDic = jsonpickle.decode(filtersStr)
-	
-		listingsCollection = db['listings']
-	
-		filteredListingsCursors = listingsCollection.find(filtersDic, { "body": 0, "title":0 , "description":0, "feetype":0})
-	
-		# returns the list of data objects
-		filteredListingsList = list(filteredListingsCursors)  
-	
-		reponseObj = Base()
-		reponseObj.Data = ListingList(3,jsonpickle.decode(dumps(filteredListingsList)),10)
-		BaseUtils.SetOKDTO(reponseObj)	
-	
-		jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-	except :
-   		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
-	       	print "There was an unexpected error: "
-	
-
-	response.headers.add('Access-Control-Allow-Origin', '*')
-	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
-	return response
-"""
-
 @app.route('/listings/<listingid>', methods = ['GET'])
 def getListingById(listingid= None):
 	
@@ -472,6 +443,30 @@ def virtualTour(listingid= None, useremail=None ):
     
     try:
     	isSuccessful = newImplementation.virtualTour(listingid, useremail)
+    	if isSuccessful:
+    		BaseUtils.SetOKDTO(reponseObj)
+    	else:
+    		## todo: implement code for not nullable listingid or  useremail
+    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+        print "There was an unexpected error: " , str(e)
+        print traceback.format_exc()
+    
+    jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+    response = Response(jsonObj)    
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    return response
+
+@app.route('/listing/<listingid>/user/<useremail>/listingdetails', methods = ['POST'])
+def virtualTour(listingid= None, useremail=None ):
+    
+    reponseObj = Base()
+    
+    try:
+    	isSuccessful = newImplementation.listingDetails(listingid, useremail)
     	if isSuccessful:
     		BaseUtils.SetOKDTO(reponseObj)
     	else:
