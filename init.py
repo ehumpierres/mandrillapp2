@@ -34,6 +34,8 @@ from email.MIMEText import MIMEText
 from business.utils.mailsender import MailSender
 from business.implementations.implementations import Implementations
 
+import datetime
+
 
 # load constants
 MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
@@ -135,7 +137,13 @@ def filterListings():
 			listing_hood = listing["neighborhood"]
 			hood_query = {'_id': ObjectId(listing_hood["_id"])}
 			hood = hoodsCollection.find_one(hood_query)
+			ldt = datetime.datetime.strptime(listing["move_in"], '%Y%d%m')
+			idt = datetime.datetime.strptime(information["movein"], '%Y%m%d')
+
 			passed_musthaves = True
+			if ldt >= idt:
+				passed_musthaves = False
+
 			for must_have in hmust_haves:
 				if hood[must_have] != 1:
 					passed_musthaves = False
@@ -157,11 +165,12 @@ def filterListings():
 
 				price = float(information["budget"] - listing["price"]) / float(information["budget"])
 	 			price_score = price * 100.00
- 				listing["score"] += price_score
+ 				listing["score"] += int(price_score)
  				final_filter.append(listing)
 
 		finalList = sorted(final_filter, key=itemgetter('score'), reverse=True)
-		if skipNumber < len(finalList):
+		complete_length = len(finalList)
+		if skipNumber < complete_length:
 			finalList = finalList[limitNumber:skipNumber]
 		else:
 			finalList = finalList[limitNumber:]
@@ -169,7 +178,7 @@ def filterListings():
 	
 		# returns the list of data objects
 	
-		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),len(finalList), information["email"])
+		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),complete_length, information["email"])
 		BaseUtils.SetOKDTO(reponseObj)	
 
 
@@ -208,6 +217,7 @@ def savePreferences():
 		unit_count_d = 1
 		hood_count_d = 1
 		apt_type_count = 1
+		unit_must_have["rooms"]=[]
 
 		for field in request.form:
 			preferencesStr = request.form[field]
@@ -290,15 +300,15 @@ def savePreferences():
 								unit_must_have["keywords"].append("parking")
 					# Get apt type
 					elif field_number == 635:
-						unit_must_have["rooms"] = range(1,5)
+						unit_must_have["rooms"].extend((1,2,3,4,5))
 						unit_must_have["keywords"].append("sublet_roomate")
 					elif field_number == 434:
-						unit_must_have["rooms"] = range(0,2)
+						unit_must_have["rooms"].extend((0,1,2))
 						unit_must_have["keywords"].append("studio")
 					elif field_number == 535:
-						unit_must_have["rooms"] = [1]
+						unit_must_have["rooms"].append(1)
 					elif field_number == 735:
-						unit_must_have["rooms"] = [2]
+						unit_must_have["rooms"].append(2)
 					# Gather relevant informaion
 					elif field_number == 1:
 						information["firstname"] = preferencesStr
