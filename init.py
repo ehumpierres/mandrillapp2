@@ -60,8 +60,19 @@ def filterListings():
 	reponseObj = Base()
 	try:
 
-		filtersStr = request.form['id']
-		filtersStr = int(filtersStr)
+		requestId = request.form['id']
+		requestId = int(requestId)
+
+		requestPage = request.form['currentPage']
+		requestPage = int(requestPage)
+
+		requestItems = request.form['itemsOnPage']
+		requestItems = int(requestItems)
+
+		limitNumber = (requestPage-1) * requestItems
+		skipNumber = requestPage * requestItems
+
+		# {"id":26,"currentPage":2,"itemsOnPage":10}
 
 		#filtersDic = jsonpickle.decode(filtersStr)
 
@@ -70,7 +81,7 @@ def filterListings():
 		hoodsCollection = db['hoods']
 
 
-		entry = preferencesCollection.find_one({"information.EntryId" : filtersStr})
+		entry = preferencesCollection.find_one({"information.EntryId" : requestId})
 
 		information = entry["information"]
 		unit_delighter = entry["unit_delighter"]
@@ -125,24 +136,39 @@ def filterListings():
 					passed_musthaves = False
 			if passed_musthaves:
 				listing["score"] = 0
-				for delighter in udelighters:
-					if listing[delighter] == 1:
-						listing["score"] += 20
-				for delighter in hdelighters:
-					if hood[delighter] == 1:
-						listing["score"] += 20
+				for key in listing.keys():
+					if key in udelighters:
+						if listing[key] == 1:
+							listing["score"] += 30
+					elif listing[key] == 1 and key not in ['bedroom', 'bathroom']:
+						listing["score"] +=10
+				for key in hood.keys():
+					if key in hdelighters:
+						if hood[key] == 1:
+							listing["score"] += 30
+					elif hood[key] == 1:
+						listing["score"] += 10
+
 
 				price = float(information["budget"] - listing["price"]) / float(information["budget"])
-	 			price_score = price * 150.00
+	 			price_score = price * 100.00
  				listing["score"] += price_score
  				final_filter.append(listing)
 
 		finalList = sorted(final_filter, key=itemgetter('score'), reverse=True)
+		if skipNumber < len(finalList):
+			finalList = finalList[limitNumber:skipNumber]
+		else:
+			finalList = finalList[limitNumber:]
+
 	
 		# returns the list of data objects
 	
 		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),len(finalList), information["email"])
 		BaseUtils.SetOKDTO(reponseObj)	
+
+
+
 	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
 	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
