@@ -175,10 +175,11 @@ def filterListings():
 		else:
 			finalList = finalList[limitNumber:]
 
+		pages = int(complete_length / requestItems)
 	
 		# returns the list of data objects
 	
-		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),complete_length, information["email"])
+		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),complete_length, information["email"], pages)
 		BaseUtils.SetOKDTO(reponseObj)	
 
 
