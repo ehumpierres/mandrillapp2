@@ -63,11 +63,16 @@ def filterListings():
 		requestId = request.form['id']
 		requestId = int(requestId)
 
-		requestPage = request.form['currentPage']
-		requestPage = int(requestPage)
-
-		requestItems = request.form['itemsOnPage']
-		requestItems = int(requestItems)
+		if "currentPage" in request.form.keys():
+			requestPage = request.form['currentPage']
+			requestPage = int(requestPage)
+		else: 
+			requestPage = 1
+		if "itemsOnPage" in request.form.keys():
+			requestItems = request.form['itemsOnPage']
+			requestItems = int(requestItems)
+		else:
+			requestItems = 100
 
 		limitNumber = (requestPage-1) * requestItems
 		skipNumber = requestPage * requestItems
