@@ -3,6 +3,7 @@ import re
 import datetime
 import traceback
 import numpy
+import math
 
 # flask imports
 from flask import Flask
@@ -212,8 +213,10 @@ def filterListings():
 		else:
 			final_list = final_list[limitNumber:]
 
+		print complete_length
+		print requestItems
 
-		pages = int(complete_length / requestItems)
+		pages = int(math.ceil(float(complete_length) / float(requestItems)))
 
 	
 		# returns the list of data objects
