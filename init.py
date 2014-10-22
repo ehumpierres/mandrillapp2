@@ -2,6 +2,7 @@ import os
 import re
 import datetime
 import traceback
+import numpy
 
 # flask imports
 from flask import Flask
@@ -131,6 +132,7 @@ def filterListings():
 		filteredListingsList = list(filteredListingsCursors)
 
 		final_filter = []
+		score_list = []
 
 		for listing in filteredListingsList:
 
@@ -150,26 +152,21 @@ def filterListings():
 
 
 
-			# if listing["bedroom"] in [0,1]:
-			# 	if "Top85_1bed" in hood.keys():
-			# 		if listing["studio"] == 1:
-			# 			print str(listing["price"]) + " vs " + str(hood["Top85_studio"])
-			# 			if listing["price"] < hood["Top85_studio"]:
-			# 				print "Oh no"
-			# 				# passed_musthaves = False
-			# 		else:
-			# 			print  hood["Top85_1bed"]
-			# 			if listing["price"] < hood["Top85_1bed"]:
-			# 				print "Oh no"
-			# 				# passed_musthaves = False 
+			if listing["bedroom"] in [0,1]:
+				if "Top85_1bed" in hood.keys():
+					if listing["studio"] == 1:
+						if int(listing["price"]) < int(hood["Top85_studio"]):
+							passed_musthaves = False
+					else:
+						print  hood["Top85_1bed"]
+						if listing["price"] < hood["Top85_1bed"]:
+							passed_musthaves = False 
 
 
-			# if listing["bedroom"] == 2:
-			# 	if "Top85_2bed" in hood.keys():
-			# 		print str(listing["price"]) + " vs " + str(hood["Top85_2bed"])
-			# 		if int(listing["price"]) < int(hood["Top85_2bed"]):
-			# 			print "skip baby"
-			# 			# passed_musthaves = False
+			if listing["bedroom"] == 2:
+				if "Top85_2bed" in hood.keys():
+					if int(listing["price"]) < int(hood["Top85_2bed"]):
+						passed_musthaves = False
 
 
 			if passed_musthaves:
@@ -191,21 +188,37 @@ def filterListings():
 				price = float(information["budget"] - listing["price"]) / float(information["budget"])
 	 			price_score = price * 100.00
  				listing["score"] += int(price_score)
+ 				score_list.append(listing["score"])
  				listing["relevance"] = (float(listing["score"]) * 20.00) / 250.00
  				final_filter.append(listing)
 
-		finalList = sorted(final_filter, key=itemgetter('score'), reverse=True)
-		complete_length = len(finalList)
+		sorted_list = sorted(final_filter, key=itemgetter('score'), reverse=True)
+		
+
+		arr = numpy.array([score_list])
+		mean =  int(numpy.mean(arr))
+		standard_dev =  int(numpy.std(arr))
+		lower = mean-(standard_dev*2)
+		upper = mean+(standard_dev*2)
+		final_list = []
+
+		for element in sorted_list:
+			if element["score"] in range(lower, upper):
+				final_list.append(element)
+
+		complete_length = len(final_list)
 		if skipNumber < complete_length:
-			finalList = finalList[limitNumber:skipNumber]
+			final_list = final_list[limitNumber:skipNumber]
 		else:
-			finalList = finalList[limitNumber:]
+			final_list = final_list[limitNumber:]
+
 
 		pages = int(complete_length / requestItems)
+
 	
 		# returns the list of data objects
 	
-		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(finalList)),complete_length, information["email"], pages)
+		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(final_list)),complete_length, information["email"], pages)
 		BaseUtils.SetOKDTO(reponseObj)	
 
 
