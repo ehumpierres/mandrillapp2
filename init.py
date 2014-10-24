@@ -153,21 +153,20 @@ def filterListings():
 
 
 
-			if listing["bedroom"] in [0,1]:
-				if "Top85_1bed" in hood.keys():
-					if listing["studio"] == 1:
-						if int(listing["price"]) < int(hood["Top85_studio"]):
-							passed_musthaves = False
-					else:
-						print  hood["Top85_1bed"]
-						if listing["price"] < hood["Top85_1bed"]:
-							passed_musthaves = False 
+			# if listing["bedroom"] in [0,1]:
+			# 	if "Top85_1bed" in hood.keys():
+			# 		if listing["studio"] == 1:
+			# 			if int(listing["price"]) < int(hood["Top85_studio"]):
+			# 				passed_musthaves = False
+			# 		else:
+			# 			if listing["price"] < hood["Top85_1bed"]:
+			# 				passed_musthaves = False 
 
 
-			if listing["bedroom"] == 2:
-				if "Top85_2bed" in hood.keys():
-					if int(listing["price"]) < int(hood["Top85_2bed"]):
-						passed_musthaves = False
+			# if listing["bedroom"] == 2:
+			# 	if "Top85_2bed" in hood.keys():
+			# 		if int(listing["price"]) < int(hood["Top85_2bed"]):
+			# 			passed_musthaves = False
 
 
 			if passed_musthaves:
@@ -194,18 +193,20 @@ def filterListings():
  				final_filter.append(listing)
 
 		sorted_list = sorted(final_filter, key=itemgetter('score'), reverse=True)
-		
 
-		arr = numpy.array([score_list])
-		mean =  int(numpy.mean(arr))
-		standard_dev =  int(numpy.std(arr))
-		lower = mean-(standard_dev*2)
-		upper = mean+(standard_dev*2)
-		final_list = []
+		final_list = []		
+		if len(score_list) >0:
+			arr = numpy.array([score_list])
+			mean =  int(numpy.mean(arr))
+			standard_dev =  int(numpy.std(arr))
+			lower = mean-(standard_dev*2)
+			upper = mean+(standard_dev*2)			
 
-		for element in sorted_list:
-			if element["score"] in range(lower, upper):
-				final_list.append(element)
+			for element in sorted_list:
+				if element["score"] in range(lower, upper):
+					final_list.append(element)
+		else:
+			final_list = sorted_list
 
 		complete_length = len(final_list)
 		if skipNumber < complete_length:
@@ -213,8 +214,6 @@ def filterListings():
 		else:
 			final_list = final_list[limitNumber:]
 
-		print complete_length
-		print requestItems
 
 		pages = int(math.ceil(float(complete_length) / float(requestItems)))
 
