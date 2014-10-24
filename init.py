@@ -134,6 +134,7 @@ def filterListings():
 
 		final_filter = []
 		score_list = []
+		price_list = []
 
 		for listing in filteredListingsList:
 
@@ -153,20 +154,20 @@ def filterListings():
 
 
 
-			if listing["bedroom"] in [0,1]:
-				if "Top85_1bed" in hood.keys():
-					if listing["studio"] == 1:
-						if int(listing["price"]) < int(hood["Top85_studio"]):
-							passed_musthaves = False
-					else:
-						if listing["price"] < hood["Top85_1bed"]:
-							passed_musthaves = False 
+			# if listing["bedroom"] in [0,1]:
+			# 	if "Top85_1bed" in hood.keys():
+			# 		if listing["studio"] == 1:
+			# 			if int(listing["price"]) < int(hood["Top85_studio"]):
+			# 				passed_musthaves = False
+			# 		else:
+			# 			if listing["price"] < hood["Top85_1bed"]:
+			# 				passed_musthaves = False 
 
 
-			if listing["bedroom"] == 2:
-				if "Top85_2bed" in hood.keys():
-					if int(listing["price"]) < int(hood["Top85_2bed"]):
-						passed_musthaves = False
+			# if listing["bedroom"] == 2:
+			# 	if "Top85_2bed" in hood.keys():
+			# 		if int(listing["price"]) < int(hood["Top85_2bed"]):
+			# 			passed_musthaves = False
 
 
 			if passed_musthaves:
@@ -186,6 +187,7 @@ def filterListings():
 
 
 				price = float(information["budget"] - listing["price"]) / float(information["budget"])
+				price_list.append(listing["price"])
 	 			price_score = price * 100.00
  				listing["score"] += int(price_score)
  				score_list.append(listing["score"])
@@ -196,14 +198,23 @@ def filterListings():
 
 		final_list = []		
 		if len(score_list) >0:
-			arr = numpy.array([score_list])
-			mean =  int(numpy.mean(arr))
-			standard_dev =  int(numpy.std(arr))
-			lower = mean-(standard_dev*2)
-			upper = mean+(standard_dev*2)			
+			arr_score = numpy.array([score_list])
+			mean_score =  int(numpy.mean(arr_score))
+			standard_dev_score =  int(numpy.std(arr_score))
+			lower_score = mean_score-(standard_dev_score*2)
+			upper_score = mean_score+(standard_dev_score*2)
+
+			print price_list
+			arr_price = numpy.array([price_list])
+			mean_price =  int(numpy.mean(arr_price))
+			standard_dev_price =  int(numpy.std(arr_price))
+			lower_price = mean_price-(standard_dev_price*2)
+			upper_price = mean_price+(standard_dev_price*2)	
+			print lower_price
+			print upper_price		
 
 			for element in sorted_list:
-				if element["score"] in range(lower, upper):
+				if element["score"] in range(lower_score, upper_score) and element["price"] in range(lower_price, upper_price):
 					final_list.append(element)
 		else:
 			final_list = sorted_list
