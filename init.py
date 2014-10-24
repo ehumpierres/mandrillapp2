@@ -152,6 +152,10 @@ def filterListings():
 				if hood[must_have] != 1:
 					passed_musthaves = False
 
+			if 0 not in bed_range:
+				if listing["studio"] = 1:
+					passed_musthaves = False
+
 
 
 			# if listing["bedroom"] in [0,1]:
