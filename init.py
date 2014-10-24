@@ -153,20 +153,20 @@ def filterListings():
 
 
 
-			# if listing["bedroom"] in [0,1]:
-			# 	if "Top85_1bed" in hood.keys():
-			# 		if listing["studio"] == 1:
-			# 			if int(listing["price"]) < int(hood["Top85_studio"]):
-			# 				passed_musthaves = False
-			# 		else:
-			# 			if listing["price"] < hood["Top85_1bed"]:
-			# 				passed_musthaves = False 
+			if listing["bedroom"] in [0,1]:
+				if "Top85_1bed" in hood.keys():
+					if listing["studio"] == 1:
+						if int(listing["price"]) < int(hood["Top85_studio"]):
+							passed_musthaves = False
+					else:
+						if listing["price"] < hood["Top85_1bed"]:
+							passed_musthaves = False 
 
 
-			# if listing["bedroom"] == 2:
-			# 	if "Top85_2bed" in hood.keys():
-			# 		if int(listing["price"]) < int(hood["Top85_2bed"]):
-			# 			passed_musthaves = False
+			if listing["bedroom"] == 2:
+				if "Top85_2bed" in hood.keys():
+					if int(listing["price"]) < int(hood["Top85_2bed"]):
+						passed_musthaves = False
 
 
 			if passed_musthaves:
