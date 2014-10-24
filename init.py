@@ -191,7 +191,9 @@ def filterListings():
 	 			price_score = price * 100.00
  				listing["score"] += int(price_score)
  				score_list.append(listing["score"])
- 				listing["relevance"] = (float(listing["score"]) * 20.00) / 250.00
+ 				listing["relevance"] = (float(listing["score"]) * 20.00) / 200.00
+ 				if listing["relevance"] > 20:
+ 					listing["relevance"] = 20
  				final_filter.append(listing)
 
 		sorted_list = sorted(final_filter, key=itemgetter('score'), reverse=True)
@@ -204,14 +206,11 @@ def filterListings():
 			lower_score = mean_score-(standard_dev_score*2)
 			upper_score = mean_score+(standard_dev_score*2)
 
-			print price_list
 			arr_price = numpy.array([price_list])
 			mean_price =  int(numpy.mean(arr_price))
 			standard_dev_price =  int(numpy.std(arr_price))
-			lower_price = mean_price-(standard_dev_price*2)
-			upper_price = mean_price+(standard_dev_price*2)	
-			print lower_price
-			print upper_price		
+			lower_price = mean_price-(int(standard_dev_price*1))
+			upper_price = mean_price+(int(standard_dev_price*2))		
 
 			for element in sorted_list:
 				if element["score"] in range(lower_score, upper_score) and element["price"] in range(lower_price, upper_price):
