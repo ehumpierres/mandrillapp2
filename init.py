@@ -160,7 +160,7 @@ def filterListings():
 				print "listing" , listing
 				print "must_have" , v
 				print "umust_haves" , umust_haves
-				if dict.has_key(must_have):
+				if listing.has_key(must_have):
 					if listing[must_have] != 1 and must_have not in ["sublet_roomate", "studio"]:
 						negative_score += 20
 
