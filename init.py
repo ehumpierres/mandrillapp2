@@ -257,6 +257,7 @@ def filterListings():
 	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
 	       	print "There was an unexpected error: " , str(e)
+	       	print traceback.format_exc()
 	
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)
@@ -443,6 +444,7 @@ def savePreferences():
 	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
 	       	print "There was an unexpected error: " , str(e)
+	       	print traceback.format_exc()
 	
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)
@@ -468,6 +470,7 @@ def getListingById(listingid= None):
    	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
 	       	print "There was an unexpected error: " , str(e)
+	       	print traceback.format_exc()
 		
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)	
@@ -570,6 +573,7 @@ def saveUserPreferences():
 	except Exception as e:
    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
 	       	print "There was an unexpected error: " , str(e)
+	       	print traceback.format_exc()
 	
 	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
 	response = Response(jsonObj)
