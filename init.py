@@ -23,6 +23,7 @@ from bson.objectid import ObjectId
 # dto response objects
 from dto.response.classes.base import Base
 from dto.response.classes.listinglist import ListingList
+from dto.response.classes.preference import Preference
 # dto response utils
 from dto.response.utils.baseutils import BaseUtils
 
@@ -539,7 +540,7 @@ def saveUserPreferences():
 
 		preferencesCollection = db['preferences']
 		pref_id = preferencesCollection.insert(db_dict)
-		reponseObj.Data = {"preferenceId": pref_id }
+		reponseObj.Data = Preference(pref_id)
 
 		# fromadd = "concierge@socrex.com"
 		# toadd = information["email"]
