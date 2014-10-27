@@ -158,7 +158,7 @@ def filterListings():
 
 			for must_have in umust_haves:
 				print "listing" , listing
-				print "must_have" , v
+				print "must_have" , must_have
 				print "umust_haves" , umust_haves
 				if listing.has_key(must_have):
 					if listing[must_have] != 1 and must_have not in ["sublet_roomate", "studio"]:
