@@ -726,8 +726,8 @@ def originalListing(listingid= None, useremail=None ):
 if __name__ == '__main__':
 	app.debug = True 
 	# enable to run in cloud9
-	hostip = os.environ['IP']
-	hostport = int(os.environ['PORT'])
-	app.run(host=hostip,port=hostport)
+	#hostip = os.environ['IP']
+	#hostport = int(os.environ['PORT'])
+	#app.run(host=hostip,port=hostport)
 	# enable to run in heroku
-	#app.run()
+	app.run()
