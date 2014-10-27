@@ -158,10 +158,11 @@ def filterListings():
 
 			for must_have in umust_haves:
 				print "listing" , listing
-				print "must_have" , must_have
+				print "must_have" , v
 				print "umust_haves" , umust_haves
-				if listing[must_have] != 1 and must_have not in ["sublet_roomate", "studio"]:
-					negative_score += 20
+				if dict.has_key(must_have):
+					if listing[must_have] != 1 and must_have not in ["sublet_roomate", "studio"]:
+						negative_score += 20
 
 
 			passed_musthaves = True
