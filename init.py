@@ -539,6 +539,7 @@ def saveUserPreferences():
 
 		preferencesCollection = db['preferences']
 		pref_id = preferencesCollection.insert(db_dict)
+		reponseObj["preferenceId"] = pref_id
 
 		# fromadd = "concierge@socrex.com"
 		# toadd = information["email"]
