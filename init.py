@@ -157,6 +157,9 @@ def filterListings():
 				passed_musthaves - False
 
 			for must_have in umust_haves:
+				print "listing" , listing
+				print "must_have" , must_have
+				print "umust_haves" , umust_haves
 				if listing[must_have] != 1 and must_have not in ["sublet_roomate", "studio"]:
 					negative_score += 20
 
