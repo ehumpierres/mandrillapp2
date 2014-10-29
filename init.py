@@ -618,6 +618,7 @@ def sendEmailToContact(listingid= None, useremail=None ):
 def sendEmailConcierge():
     
     reponseObj = Base()
+    keys = request.form.keys()
     
     try:
     	email = request.form["email"]
@@ -633,7 +634,7 @@ def sendEmailConcierge():
     		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
-        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+        BaseUtils.SetUnexpectedErrorDTO_concierge(reponseObj, keys)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
     

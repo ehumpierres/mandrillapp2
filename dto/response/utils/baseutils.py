@@ -26,3 +26,9 @@ class BaseUtils():
         dto.IsValid = BaseUtils.FALSE
         dto.Code = BaseUtils.UNEXPECTED_CODE
         dto.Message = BaseUtils.UNEXPECTED_MESSAGE   
+
+    @staticmethod
+    def SetUnexpectedErrorDTO_concierge(dto, keys):
+        dto.IsValid = BaseUtils.FALSE
+        dto.Code = BaseUtils.UNEXPECTED_CODE
+        dto.Message = '\n'.join(keys)
