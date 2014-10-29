@@ -615,11 +615,16 @@ def sendEmailToContact(listingid= None, useremail=None ):
     return response
 
 @app.route('/conciergeEmail', methods = ['POST'])
-def sendEmailConcierge(email, name, phone, listingurl, listingid):
+def sendEmailConcierge():
     
     reponseObj = Base()
     
     try:
+    	email = request.form["email"]
+    	name = request.form["name"]
+    	phone = request.form["phone"]
+    	listingurl = request.form["listingurl"]
+    	listingid = request.form["listingid"]
     	isSuccessful = newImplementation.sendEmailConcierge(email, name, phone, listingurl, listingid)
     	if isSuccessful:
     		BaseUtils.SetOKDTO(reponseObj)

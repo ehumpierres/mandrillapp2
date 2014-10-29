@@ -51,12 +51,12 @@ class Implementations():
             listingCollection = Listings(self.__db__)
 
             subject = str(username) + " - " + str(listingid)
-            body = "User: " + username + "\nEmail: " + email + "\nPhone: "+userphone+"\nUrl: "+listing_url
+            body = "User: " + username + "<br> Email: " + email + "<br> Phone: "+userphone+"<br> Url: "+listing_url
             # get landlord email
             ## instantiate email sender object
-            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@socrex.com')
+            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@socrex.com', 'monaco123')
             ## send email
-            mailSenderObj.sendEmail('concierge@socrex.com', subject , body)
+            mailSenderObj.sendEmail('concierge@socrex.com', 'concierge@socrex.com', subject , body)
             ## email quit sender object
             mailSenderObj.quit()
             
