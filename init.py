@@ -249,10 +249,13 @@ def filterListings():
 
 		pages = int(math.ceil(float(complete_length) / float(requestItems)))
 
-	
+		user_email = ""
+		if "email" in information.keys():
+			user_email = information["email"]
+
 		# returns the list of data objects
 	
-		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(final_list)),complete_length, information["email"], pages)
+		reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(final_list)),complete_length, user_email, pages)
 		BaseUtils.SetOKDTO(reponseObj)	
 
 
