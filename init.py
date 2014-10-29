@@ -614,6 +614,30 @@ def sendEmailToContact(listingid= None, useremail=None ):
     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
     return response
 
+@app.route('/conciergeEmail', methods = ['POST'])
+def sendEmailConcierge(email, name, phone, listingurl, listingid):
+    
+    reponseObj = Base()
+    
+    try:
+    	isSuccessful = newImplementation.sendEmailConcierge(email, name, phone, listingurl, listingid)
+    	if isSuccessful:
+    		BaseUtils.SetOKDTO(reponseObj)
+    	else:
+    		## todo: implement code for not nullable listingid or  useremail
+    		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+        print "There was an unexpected error: " , str(e)
+        print traceback.format_exc()
+    
+    jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+    response = Response(jsonObj)    
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    return response
+
 @app.route('/listing/<listingid>/user/<useremail>/verifyavailability', methods = ['POST'])
 def verifyListingAvailability(listingid= None, useremail=None ):
     

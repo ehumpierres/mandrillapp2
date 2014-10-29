@@ -42,6 +42,32 @@ class Implementations():
 	        returnSuccess = True
 	        
         return returnSuccess
+
+    def sendEmailConcierge(self, email, username, userphone, listing_url, listingid):
+        returnSuccess = False
+        
+        if email is not None and username is not None and userphone is not None and listing_url is not None and listingid is not None:
+            
+            listingCollection = Listings(self.__db__)
+
+            subject = str(username) + " - " + str(listingid)
+            body = "User: " + username + "\nEmail: " + email + "\nPhone: "+userphone+"\nUrl: "+listing_url
+            # get landlord email
+            ## instantiate email sender object
+            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@socrex.com')
+            ## send email
+            mailSenderObj.sendEmail('concierge@socrex.com', subject , body)
+            ## email quit sender object
+            mailSenderObj.quit()
+            
+            # save hit in the listing option collection
+            # listingOptionCollection = ListingOptions(self.__db__)
+            # listingOptionCollection.saveListingOptionClick(listingid,useremail,"contact")
+            
+            ## add ok code to dto
+            returnSuccess = True
+            
+        return returnSuccess
     
     def verifyListingAvailability(self, listingid= None, useremail=None ):
         returnSuccess = False
