@@ -633,7 +633,7 @@ def sendEmailConcierge():
     		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
-        BaseUtils.SetUnexpectedErrorDTO(reponseObj, e)
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
     
