@@ -22,7 +22,7 @@ class BaseUtils():
         dto.Message = BaseUtils.OK_MESSAGE  
         
     @staticmethod
-    def SetUnexpectedErrorDTO(dto):
+    def SetUnexpectedErrorDTO(dto, e):
         dto.IsValid = BaseUtils.FALSE
         dto.Code = BaseUtils.UNEXPECTED_CODE
-        dto.Message = BaseUtils.UNEXPECTED_MESSAGE   
+        dto.Message = BaseUtils.UNEXPECTED_MESSAGE+str(e)
