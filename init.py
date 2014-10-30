@@ -4,6 +4,7 @@ import datetime
 import traceback
 import numpy
 import math
+import json
 
 # flask imports
 from flask import Flask
@@ -618,14 +619,15 @@ def sendEmailToContact(listingid= None, useremail=None ):
 def sendEmailConcierge():
     
     reponseObj = Base()
-    keys = request.form.keys()
+    json_object = request.form.keys()
+    json_resquest = json.loads(json_object[0])
     
     try:
-    	email = request.form["email"]
-    	name = request.form["name"]
-    	phone = request.form["phone"]
-    	listingurl = request.form["listingurl"]
-    	listingid = request.form["listingid"]
+    	email = json_resquest["email"]
+    	name = json_resquest["name"]
+    	phone = json_resquest["phone"]
+    	listingurl = json_resquest["listingurl"]
+    	listingid = json_resquest["listingid"]
     	isSuccessful = newImplementation.sendEmailConcierge(email, name, phone, listingurl, listingid)
     	if isSuccessful:
     		BaseUtils.SetOKDTO(reponseObj)
@@ -634,7 +636,7 @@ def sendEmailConcierge():
     		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
-        BaseUtils.SetUnexpectedErrorDTO_concierge(reponseObj, keys)
+        BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
     
