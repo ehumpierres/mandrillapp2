@@ -718,13 +718,13 @@ def virtualTour(listingid= None, useremail=None ):
     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
     return response
 
-@app.route('/listing/<listingid>/user/<useremail>/listingdetails', methods = ['POST'])
+@app.route('/listing/<listingid>/listingdetails', methods = ['POST'])
 def listingDetails(listingid= None, useremail=None ):
     
     reponseObj = Base()
     
     try:
-    	isSuccessful = newImplementation.listingDetails(listingid, useremail)
+    	isSuccessful = newImplementation.listingDetails(listingid)
     	if isSuccessful:
     		BaseUtils.SetOKDTO(reponseObj)
     	else:
