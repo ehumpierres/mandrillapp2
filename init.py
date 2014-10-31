@@ -131,7 +131,6 @@ def filterListings():
 		if "sublet_roomate" in umust_haves:
 			unit_query["sublet_roomate"] = 1
 
-
 		filteredListingsCursors = listingsCollection.find(unit_query)
 		filteredListingsList = list(filteredListingsCursors)
 
@@ -140,6 +139,9 @@ def filterListings():
 		price_list = []
 
 		for listing in filteredListingsList:
+
+			ldatetime=""
+			idatetime=""
 
 			if "neighborhood" in listing.keys():
 				listing_hood = listing["neighborhood"]
@@ -155,12 +157,9 @@ def filterListings():
 
 			else :
 
-				passed_musthaves - False
+				passed_musthaves = False
 
 			for must_have in umust_haves:
-				print "listing" , listing
-				print "must_have" , must_have
-				print "umust_haves" , umust_haves
 				if listing.has_key(must_have):
 					if listing[must_have] != 1 and must_have not in ["sublet_roomate", "studio"]:
 						negative_score += 20
@@ -198,13 +197,13 @@ def filterListings():
 					if key in udelighters:
 						if listing[key] == 1:
 							listing["score"] += 30
-					elif listing[key] == 1 and key not in ['bedroom', 'bathroom']:
+					elif listing[key] == 1 and key in ['laundry', 'hardwood', 'lighting', 'kitchen', 'deck_balcony', 'ameneties', 'cieling'] :
 						listing["score"] +=10
 				for key in hood.keys():
 					if key in hdelighters:
 						if hood[key] == 1:
 							listing["score"] += 30
-					elif hood[key] == 1:
+					elif hood[key] == 1 and key in ['Safe', 'Locales_good', 'Parks']:
 						listing["score"] += 10
 
 
