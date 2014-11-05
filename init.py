@@ -123,13 +123,15 @@ def filterListings():
 			hdelighters = hood_delighter["keywords"]
 
 		unit_query = {
-					"price": {"$in": range(800,information["budget"])}
+					"price": {"$in": range(300,information["budget"])}
 					, "bedroom": {"$in": bed_range}
 				}
 		if "studio" in umust_haves:
 			unit_query["studio"] = 1
 		if "sublet_roomate" in umust_haves:
 			unit_query["sublet_roomate"] = 1
+		else:
+			unit_query["sublet_roomate"] = 0
 
 		filteredListingsCursors = listingsCollection.find(unit_query)
 		filteredListingsList = list(filteredListingsCursors)
