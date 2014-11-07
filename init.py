@@ -103,7 +103,8 @@ def filterListings():
 
 		if "rooms" in unit_must_have.keys():
 			bed_range = unit_must_have["rooms"]
-		else:
+
+		if len(bed_range) == 0:
 			bed_range = range(0,4)
 
 		udelighters = []
@@ -275,192 +276,6 @@ def filterListings():
 	return response
 
 
-
-# Capture User preferences call (Wufoo form for now)
-
-@app.route('/preferences', methods = ['POST'])
-def savePreferences():	
-	reponseObj = Base()
-	try:
-		hood_must_have = dict()
-		hood_must_have["keywords"] = []
-		hood_delighter = dict()
-		hood_delighter["keywords"] = []
-		unit_must_have = dict()
-		unit_must_have["keywords"] = []
-		unit_delighter = dict()
-		unit_delighter["keywords"] = []
-		information = dict()
-		db_dict = dict()
-		unit_count_m = 1
-		hood_count_m = 1
-		unit_count_d = 1
-		hood_count_d = 1
-		apt_type_count = 1
-		unit_must_have["rooms"]=[]
-
-		for field in request.form:
-			preferencesStr = request.form[field]
-			if preferencesStr:
-				if field[:5] == "Field":
-					field_number = field[5:]
-					field_number = int(field_number)
-					# Get hood Delighters
-					if field_number in range (843,855):
-						if hood_count_d < 4:
-							if field_number == 843:
-								hood_delighter["keywords"].append("Locales_good")
-							elif field_number == 844:
-								hood_delighter["keywords"].append("Parks")
-							elif field_number == 845:
-								hood_delighter["keywords"].append("Walkable")
-							elif field_number == 847:
-								hood_delighter["keywords"].append("Family")
-							elif field_number == 848:
-								hood_delighter["keywords"].append("Student_vibe")
-							elif field_number == 849:
-								hood_delighter["keywords"].append("Young_pro")
-							elif field_number == 850:
-								hood_delighter["keywords"].append("Quiet")
-							elif field_number == 852:
-								hood_delighter["keywords"].append("Classic")
-							elif field_number == 854:
-								hood_delighter["keywords"].append("Modern")
-
-					# Get hood Must-haves
-					elif field_number in range (943,947):
-						if hood_count_m < 4:
-							if field_number == 943:
-								hood_must_have["keywords"].append("Near_action")
-							elif field_number == 944:
-								hood_must_have["keywords"].append("Safe")
-							elif field_number == 945:
-								hood_must_have["keywords"].append("Easy_transport")
-							elif field_number == 946:
-								hood_must_have["keywords"].append("Parking")
-
-					#Get Unit Delighters
-					elif field_number in range (1045,1057):
-						if unit_count_d < 4:
-							if field_number == 1045:
-								unit_delighter["keywords"].append("hardwood")
-							elif field_number == 1046:
-								unit_delighter["keywords"].append("laundry")
-							elif field_number == 1047:
-								unit_delighter["keywords"].append("lighting") 
-							elif field_number == 1048:
-								unit_delighter["keywords"].append("deck_balcony")
-							elif field_number == 1049:
-								unit_delighter["keywords"].append("cieling")
-							elif field_number == 1050:
-								unit_delighter["keywords"].append("kitchen")
-							elif field_number == 1051:
-								unit_delighter["keywords"].append("spacing")
-							elif field_number == 1052:
-								unit_delighter["keywords"].append("ameneties")
-							elif field_number == 1053:
-								unit_delighter["keywords"].append("view")
-							elif field_number == 1054:
-								unit_delighter["keywords"].append("modern")
-							elif field_number == 1055:
-								unit_delighter["keywords"].append("classic")
-							elif field_number == 1056:
-								unit_delighter["keywords"].append("loft")
-
-					#Get Unit Must-haves
-					elif field_number in range (1145,1151):
-						if unit_count_m < 4:
-							if field_number == 1145:
-								unit_must_have["keywords"].append("pet")
-							elif field_number == 1146:
-								unit_must_have["keywords"].append("spacing")
-							elif field_number == 1147:
-								unit_must_have["keywords"].append("lighting")
-							elif field_number == 1150:
-								unit_must_have["keywords"].append("parking")
-					# Get apt type
-					elif field_number == 635:
-						unit_must_have["rooms"].extend((1,2,3,4,5))
-						unit_must_have["keywords"].append("sublet_roomate")
-					elif field_number == 434:
-						unit_must_have["rooms"].extend((0,1,2))
-						unit_must_have["keywords"].append("studio")
-					elif field_number == 535:
-						unit_must_have["rooms"].append(1)
-					elif field_number == 735:
-						unit_must_have["rooms"].append(2)
-					# Gather relevant informaion
-					elif field_number == 1:
-						information["firstname"] = preferencesStr
-					elif field_number == 2: 
-						information["lastname"] = preferencesStr
-					elif field_number == 5:
-						information["email"] = preferencesStr
-					elif field_number == 1248:
-						information["gender"] = preferencesStr
-					elif field_number == 316:
-						information["move_reason"] = preferencesStr
-					elif field_number == 1247:
-						information["importance"] = preferencesStr
-					elif field_number == 1250:
-						information["location"] = preferencesStr
-					elif field_number == 836:
-						information["transportation"] = preferencesStr
-					elif field_number == 321:
-						budget = preferencesStr.split(".")
-						information["budget"] = int(budget[0])
-					elif field_number == 319:
-						information["movein"] = preferencesStr
-				elif field == "EntryId":
-					information["EntryId"] = int(preferencesStr)
-				elif field == "DateUpdated":
-					information["DateUpdated"] = preferencesStr
-				elif field == "DateCreated":
-					information["DateCreated"] = preferencesStr
-
-		db_dict["information"] = information
-		db_dict["unit_must_have"] = unit_must_have
-		db_dict["unit_delighter"] = unit_delighter
-		db_dict["hood_must_have"] = hood_must_have
-		db_dict["hood_delighter"] = hood_delighter
-
-		preferencesCollection = db['preferences']
-		preferencesCollection.insert(db_dict)
-
-		fromadd = "concierge@socrex.com"
-		toadd = information["email"]
-		msg = MIMEMultipart()
-		msg['From'] = fromadd
-		msg['To'] = toadd
-		msg['Subject'] = "Socrex - Concierge reply"
-		body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://frontend-socrex-stage.herokuapp.com/#/listings/filter/"+str(information["EntryId"])
-		msg.attach(MIMEText(body, 'plain'))
-
-		# Send the message via our own SMTP server, but don't include the
-		# envelope header.
-		s = smtplib.SMTP('smtp.gmail.com:587')
-		s.ehlo()
-		s.starttls()
-		s.ehlo()
-		s.login(fromadd, "monaco123")
-		text = msg.as_string()
-		s.sendmail(fromadd, toadd, text)
-		s.quit()
-
-	
-		BaseUtils.SetOKDTO(reponseObj)	
-	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
-	except Exception as e:
-   		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
-	       	print "There was an unexpected error: " , str(e)
-	       	print traceback.format_exc()
-	
-	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-	response = Response(jsonObj)
-	response.headers.add('Access-Control-Allow-Origin', '*')
-	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
-	return response
-
 @app.route('/listings/<listingid>', methods = ['GET'])
 def getListingById(listingid= None):
 	
@@ -543,6 +358,9 @@ def saveUserPreferences():
 
 				elif field in ["budget", "walking_time", "bike_time", "driving_time", "transit_time"]:
 					information[field] = int(preferencesStr)
+
+		if 'budget' not in information.keys():
+			information['budget'] = 5000
 
 		db_dict["information"] = information
 		db_dict["unit_must_have"] = unit_must_have
