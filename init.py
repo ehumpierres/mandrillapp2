@@ -42,8 +42,11 @@ import datetime
 
 
 # load constants
-MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-MONGO_DB = "app30172457"
+#MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+#MONGO_DB = "app30172457"
+
+MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
+MONGO_DB = "app31380057"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -90,7 +93,7 @@ def filterListings():
 		listingsCollection = db['listings']
 		hoodsCollection = db['hoods']
 
-
+		print "requestId" , requestId
 		entry = preferencesCollection.find_one({"_id" : ObjectId(requestId)})
 
 		information = entry["information"]
@@ -148,8 +151,11 @@ def filterListings():
 
 			if "neighborhood" in listing.keys():
 				listing_hood = listing["neighborhood"]
+				"""
 				hood_query = {'_id': ObjectId(listing_hood["_id"])}
 				hood = hoodsCollection.find_one(hood_query)
+				"""
+				hood = listing_hood
 				ldatetime = datetime.datetime.strptime(listing["move_in"], '%Y%d%m')
 				idatetime = datetime.datetime.strptime(information["movein"], '%Y%m%d')
 				negative_score = 0
@@ -588,8 +594,8 @@ def originalListing(listingid= None, useremail=None ):
 if __name__ == '__main__':
 	app.debug = True 
 	# enable to run in cloud9
-	#hostip = os.environ['IP']
-	#hostport = int(os.environ['PORT'])
-	#app.run(host=hostip,port=hostport)
+	hostip = os.environ['IP']
+	hostport = int(os.environ['PORT'])
+	app.run(host=hostip,port=hostport)
 	# enable to run in heroku
-	app.run()
+	#app.run()
