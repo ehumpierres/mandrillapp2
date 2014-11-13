@@ -308,14 +308,48 @@ def getListingById(listingid= None):
 	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  	
 	return response
 
-
-
-
+@app.route('/userpreferences/<userPreferencesId>', methods = ['GET'])
+def getUserPreferences(userPreferencesId= None):	
+	reponseObj = Base()
+	# {"apartmentType":"1 Bedroom" , "personType":"student","hoodType":"classic", "budget":5000, "moveIn":20143101}
+	
+	try:
+		if(userPreferencesId != None):
+			preferencesCollection = db['preferences']
+			pref_obj = preferencesCollection.find_one({"_id": ObjectId(userPreferencesId)})
+			reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_obj['_id'])), pref_obj['filters'])
+			print "reponseObj.Data" , reponseObj.Data
+			BaseUtils.SetOKDTO(reponseObj)	
+			
+	# TODO: IMPLEMENT APROPIATE ERROR HANDLING
+	except Exception as e:
+   		BaseUtils.SetUnexpectedErrorDTO(reponseObj)
+	       	print "There was an unexpected error: " , str(e)
+	       	print traceback.format_exc()
+	
+	jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
+	response = Response(jsonObj)
+	response.headers.add('Access-Control-Allow-Origin', '*')
+	response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
+	return response
 
 @app.route('/userpreferences', methods = ['POST'])
 def saveUserPreferences():	
 	reponseObj = Base()
+	# {"apartmentType":"1 Bedroom" , "personType":"student","hoodType":"classic", "budget":5000, "moveIn":20143101}
+	
 	try:
+		filtersObj = {}
+		
+		## identify filters
+		f = request.form
+		if 'filters' in f:
+			print "request.form['filters']" , request.form['filters']
+			filtersObj = jsonpickle.decode(request.form['filters'])
+			print "type(filtersObj)" , type(filtersObj)
+			print "filtersObj" , filtersObj
+		
+		
 		hood_must_have = dict()
 		hood_must_have["keywords"] = []
 		hood_delighter = dict()
@@ -369,6 +403,7 @@ def saveUserPreferences():
 			information['budget'] = 5000
 
 		db_dict["information"] = information
+		db_dict["filters"] = filtersObj
 		db_dict["unit_must_have"] = unit_must_have
 		db_dict["unit_delighter"] = unit_delighter
 		db_dict["hood_must_have"] = hood_must_have
@@ -377,7 +412,7 @@ def saveUserPreferences():
 		preferencesCollection = db['preferences']
 		pref_id = preferencesCollection.insert(db_dict)
 		print "pref_id" , pref_id
-		reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_id)))
+		reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_id)), filtersObj)
 		#reponseObj.Data = {"preferenceId" : pref_id}
 		print "reponseObj.Data" , reponseObj.Data
 		# fromadd = "concierge@socrex.com"
