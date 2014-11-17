@@ -42,11 +42,11 @@ import datetime
 
 
 # load constants
-#MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-#MONGO_DB = "app30172457"
+MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+MONGO_DB = "app30172457"
 
-MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-MONGO_DB = "app31380057"
+# MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
+# MONGO_DB = "app31380057"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -56,11 +56,6 @@ newImplementation = Implementations()
 
 # init flask app
 app = Flask(__name__)
-
-@app.route('/')
-def hello_world():
-    return 'Hello World!'
-
 
 # Filter entries based off of user preferences
 
