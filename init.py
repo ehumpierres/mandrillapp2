@@ -103,6 +103,7 @@ def save_listing():
         # update listing neighborhood info
         update_neighborhood_info(saved_listing_id, neighborhoods_coords)
         # prepare object to be responded
+        reponse_obj.Data = jsonpickle.decode(dumps({'_id': saved_listing_id}))
         BaseUtils.SetOKDTO(reponse_obj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
