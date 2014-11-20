@@ -14,11 +14,11 @@ class Implementations():
     def __init__(self):
 
         # load constants
-        # self.__MONGO_URL__ = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-        #self.__MONGO_DB__ = "app30172457"
+        self.__MONGO_URL__ = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+        self.__MONGO_DB__ = "app30172457"
 
-        self.__MONGO_URL__ = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-        self.__MONGO_DB__ = "app31380057"
+        # self.__MONGO_URL__ = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
+        # self.__MONGO_DB__ = "app31380057"
 
 
         # init db connection
