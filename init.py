@@ -418,27 +418,8 @@ def saveUserPreferences():
         pref_id = preferencesCollection.insert(db_dict)
         print "pref_id" , pref_id
         reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_id)), filtersObj)
-        #reponseObj.Data = {"preferenceId" : pref_id}
         print "reponseObj.Data" , reponseObj.Data
-        # fromadd = "concierge@socrex.com"
-        # toadd = information["email"]
-        # msg = MIMEMultipart()
-        # msg['From'] = fromadd
-        # msg['To'] = toadd
-        # msg['Subject'] = "Socrex - Concierge reply"
-        # body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://frontend-socrex-stage.herokuapp.com/#/listings/filter/"+str(pref_id)
-        # msg.attach(MIMEText(body, 'plain'))
-
-        # # Send the message via our own SMTP server, but don't include the
-        # # envelope header.
-        # s = smtplib.SMTP('smtp.gmail.com:587')
-        # s.ehlo()
-        # s.starttls()
-        # s.ehlo()
-        # s.login(fromadd, "monaco123")
-        # text = msg.as_string()
-        # s.sendmail(fromadd, toadd, text)
-        # s.quit()
+        
 
     
         BaseUtils.SetOKDTO(reponseObj)  
