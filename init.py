@@ -3,6 +3,7 @@ import re
 import datetime
 import traceback
 import numpy
+import scipy
 import math
 import json
 
@@ -11,7 +12,7 @@ from flask import Flask
 from flask import request
 from flask import Response
 #from flask.ext.cors import CORS
-#from  flask.ext.mongoengine import MongoEngine
+#from flask.ext.mongoengine import MongoEngine
 
 from operator import itemgetter
 
@@ -46,7 +47,7 @@ MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
 MONGO_DB = "app30172457"
 
 # MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-# MONGO_DB = "app31380057"
+# MONGO_DB = " app31380057"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -58,6 +59,10 @@ newImplementation = Implementations()
 app = Flask(__name__)
 
 # Filter entries based off of user preferences
+
+@app.route('/')
+def deploy_success():
+    return 'This application has deployed successfully.'
 
 @app.route('/listings/filter', methods = ['POST'])
 def filterListings():   
