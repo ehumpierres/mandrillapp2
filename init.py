@@ -689,7 +689,12 @@ if __name__ == '__main__':
     app.debug = True
     # enable to run in cloud9
     # hostip = os.environ['IP']
+    hostip = "0.0.0.0"
     # hostport = int(os.environ['PORT'])
-    # app.run(host=hostip,port=hostport)
+    hostport = int(8080)
+    # hostip = os.getenv('IP', '0.0.0.0')
+    # hostport = os.getenv('PORT', 8080)
+    # print "type(hostport)" , type(hostport)
+    app.run(host=hostip,port=hostport)
     # enable to run in heroku
-    app.run()
+    # app.run()

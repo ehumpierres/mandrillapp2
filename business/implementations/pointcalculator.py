@@ -18,12 +18,12 @@ class PointCalculator():
 
         # Create engine with pipeline configuration
         self.__engine__ = Engine(self.__dimension__, lshashes=[self.__rbp__])
-        self.setSearchingPointList(point_list)
-        self.setQueryPoint(point)
+        self.set_searching_point_list(point_list)
+        self.set_query_point(point)
 
     def __load_point_list_in_engine(self):
-        for index in xrange(0,len(self.__pointList__)):
-            v = numpy.array(self.__pointList__[index])
+        for index in xrange(0,len(self.__point_list__)):
+            v = numpy.array(self.__point_list__[index])
             self.__engine__.store_vector(v, 'data_%d' % index)
 
     def set_searching_point_list(self, point_list):

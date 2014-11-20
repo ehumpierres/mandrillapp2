@@ -25,6 +25,14 @@ class Listings():
                 ## from string to float
                 return_coord = [float(listing_obj["latitude"]), float(listing_obj["longitude"])]
         return return_coord
+        
+    def update_listing_neighborhood_by_listing_id(self, listing_id, neighborhood_obj):
+        return_value = False
+        if listing_id is not None:
+            listing_obj = self.__collectionObject__.update({'_id': ObjectId(listing_id)},{"$set":{'neighborhood':neighborhood_obj}} )
+            return_value = True
+        return return_value
+        
 
     def getLandLordEmailByListingId(self , listingid):
         landlordEmail = ""

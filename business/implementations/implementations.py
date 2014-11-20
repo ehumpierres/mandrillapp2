@@ -3,6 +3,8 @@ from pymongo import MongoClient
 
 from business.utils.mailsender import MailSender
 
+from business.implementations.pointcalculator import PointCalculator
+
 from persistence.collections.listings import Listings
 from persistence.collections.listingoptions import ListingOptions
 from persistence.collections.neighborhoods import Neighborhoods
@@ -30,9 +32,11 @@ class Implementations():
             listing_collection_persistence = Listings(self.__db__)
             neighborhood_collection_persistence = Neighborhoods(self.__db__)
             # get single listing coords
-            listings_coords = listing_collection_persistence.getUnitListingCoordsByListingId(listing_id)
+            listings_coords = listing_collection_persistence.get_unit_listing_coords_by_listing_id(listing_id)
             # implement class that has ANN algorithms
-            new_point_calculator = PointCalculator(listings_coords, neighborhoods_coords)
+            print "listings_coords", listings_coords
+            print "neighborhoods_coords", neighborhoods_coords
+            new_point_calculator = PointCalculator(neighborhoods_coords, listings_coords)
             # get coords of all the neighbors
             array_coords = new_point_calculator.get_nearest_point_array_coords()
             # get neighbor based on its coords

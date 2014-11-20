@@ -19,21 +19,7 @@ class Neighborhoods():
                     return_neighborhoods_coords.append([coordinate['Latitude'], coordinate['Longitude']])
         return return_neighborhoods_coords
 
-    def getNeighborhoodIdByCoords(self, latitude, longitude):
-        returnId = None
-        if latitude is not None and longitude  is not None :
-            # modify based on he new structure
-            #shapes: {$elemMatch: {color: "red"}}
-            # $in: [latitude, longitude]
-            print "latitude" , latitude
-            print "longitude" , longitude
-            neighborhoodObj = self.__collectionObject__.find_one({ 'Coordinates': { '$elemMatch': {"Latitude": latitude , "Longitude": longitude}} } )
-            print "neighborhoodObj" , neighborhoodObj
-            if neighborhoodObj:
-                returnId = neighborhoodObj["_id"]
-        return returnId
-
-    def getNeighborhoodByCoords(self, latitude, longitude):
+    def get_neighborhood_by_coords(self, latitude, longitude):
         returnObj = None
         if latitude is not None and longitude  is not None :
             # modify based on he new structure
