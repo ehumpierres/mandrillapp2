@@ -3,9 +3,10 @@ import re
 import datetime
 import traceback
 import numpy
-import scipy
 import math
 import json
+
+from threading import Thread
 
 # flask imports
 from flask import Flask
@@ -39,6 +40,8 @@ from email.MIMEText import MIMEText
 from business.utils.mailsender import MailSender
 from business.implementations.implementations import Implementations
 
+from persistence.collections.neighborhoods import Neighborhoods
+
 import datetime
 
 
@@ -47,7 +50,7 @@ MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
 MONGO_DB = "app30172457"
 
 # MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-# MONGO_DB = " app31380057"
+# MONGO_DB = "app31380057"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -57,6 +60,61 @@ newImplementation = Implementations()
 
 # init flask app
 app = Flask(__name__)
+
+def update_neighborhood_info(listing_id, neighborhoods_coords):
+    newImplementation.update_neighborhood_info(listing_id, neighborhoods_coords)
+
+def get_neighborhood_coordinates():
+    neighborhood_collection_persistence = Neighborhoods(db)
+    # get all neighborhoods coords
+    neighborhoods_coordinates = neighborhood_collection_persistence.get_neighborhoods_coordinates()
+    return neighborhoods_coordinates
+
+def cast_save_listing_form(request_form):
+    cast_obj = dict()
+    request_form_keys = request_form.keys()
+
+    #  copy elements to new obt
+    for request_form_key in request_form_keys:
+        cast_obj[request_form_key] = request_form[request_form_key]
+
+    #  set right types
+    cast_obj['bathrooms'] = int(cast_obj['bathrooms'])
+    cast_obj['bedrooms'] = int(cast_obj['bedrooms'])
+    cast_obj['latitude'] = float(cast_obj['latitude'])
+    cast_obj['longitude'] = float(cast_obj['longitude'])
+    cast_obj['price'] = int(cast_obj['price'])
+
+    return cast_obj
+
+
+# create a single listing
+@app.route('/listings', methods=['POST'])
+def save_listing():
+    reponse_obj = Base()
+    try:
+        request_form = request.form
+        listing_dic = cast_save_listing_form(request_form)
+
+        # get all neighborhoods coords
+        neighborhoods_coords = get_neighborhood_coordinates()
+        # save listing in database
+        saved_listing_id = newImplementation.save_listing(listing_dic)
+        # update listing neighborhood info
+        update_neighborhood_info(saved_listing_id, neighborhoods_coords)
+        # prepare object to be responded
+        BaseUtils.SetOKDTO(reponse_obj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponse_obj)
+        print "There was an unexpected error: ", str(e)
+        print traceback.format_exc()
+
+    json_obj = jsonpickle.encode(reponse_obj, unpicklable=False)
+    response = Response(json_obj)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
+    return response
 
 # Filter entries based off of user preferences
 
@@ -418,8 +476,27 @@ def saveUserPreferences():
         pref_id = preferencesCollection.insert(db_dict)
         print "pref_id" , pref_id
         reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_id)), filtersObj)
+        #reponseObj.Data = {"preferenceId" : pref_id}
         print "reponseObj.Data" , reponseObj.Data
-        
+        # fromadd = "concierge@socrex.com"
+        # toadd = information["email"]
+        # msg = MIMEMultipart()
+        # msg['From'] = fromadd
+        # msg['To'] = toadd
+        # msg['Subject'] = "Socrex - Concierge reply"
+        # body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://frontend-socrex-stage.herokuapp.com/#/listings/filter/"+str(pref_id)
+        # msg.attach(MIMEText(body, 'plain'))
+
+        # # Send the message via our own SMTP server, but don't include the
+        # # envelope header.
+        # s = smtplib.SMTP('smtp.gmail.com:587')
+        # s.ehlo()
+        # s.starttls()
+        # s.ehlo()
+        # s.login(fromadd, "monaco123")
+        # text = msg.as_string()
+        # s.sendmail(fromadd, toadd, text)
+        # s.quit()
 
     
         BaseUtils.SetOKDTO(reponseObj)  
