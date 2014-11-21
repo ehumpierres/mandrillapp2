@@ -6,7 +6,7 @@ from bson.objectid import ObjectId
 class Listings():
     
     def __init__(self, db):
-        self.__collectionName__ = "listingoptions"
+        self.__collectionName__ = "listings"
         self.__db__ = db
         self.__loadConnection()
     
