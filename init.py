@@ -46,11 +46,11 @@ import datetime
 
 
 # load constants
-# MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-# MONGO_DB = "app30172457"
+MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+MONGO_DB = "app30172457"
 
-MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-MONGO_DB = "app31380057"
+# MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
+# MONGO_DB = "app31380057"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -84,7 +84,9 @@ def cast_save_listing_form(request_form):
     cast_obj['latitude'] = float(cast_obj['latitude'])
     cast_obj['longitude'] = float(cast_obj['longitude'])
     cast_obj['price'] = int(cast_obj['price'])
-
+    cast_obj['pictures'] = jsonpickle.decode(request_form['pictures'])
+    cast_obj['lastupdated'] = datetime.datetime.utcnow().isoformat()
+    print "cast_obj" , cast_obj
     return cast_obj
 
 
@@ -103,6 +105,8 @@ def save_listing():
         # update listing neighborhood info
         update_neighborhood_info(saved_listing_id, neighborhoods_coords)
         # prepare object to be responded
+        print "saved_listing_id" , saved_listing_id
+        reponse_obj.Data = jsonpickle.decode(dumps({'_id': saved_listing_id}))
         BaseUtils.SetOKDTO(reponse_obj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
