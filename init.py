@@ -129,6 +129,7 @@ def filterListings():
         unit_query = {
                     "price": {"$in": range(300,information["budget"])}
                     , "bedroom": {"$in": bed_range}
+                    , "isDeleted": 0
                 }
         if "studio" in umust_haves:
             unit_query["studio"] = 1
