@@ -3,9 +3,10 @@ import re
 import datetime
 import traceback
 import numpy
-import scipy
 import math
 import json
+
+from threading import Thread
 
 # flask imports
 from flask import Flask
@@ -39,6 +40,8 @@ from email.MIMEText import MIMEText
 from business.utils.mailsender import MailSender
 from business.implementations.implementations import Implementations
 
+from persistence.collections.neighborhoods import Neighborhoods
+
 import datetime
 
 
@@ -47,7 +50,7 @@ MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
 MONGO_DB = "app30172457"
 
 # MONGO_URL = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-# MONGO_DB = " app31380057"
+# MONGO_DB = "app31380057"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -58,6 +61,63 @@ newImplementation = Implementations()
 # init flask app
 app = Flask(__name__)
 
+def update_neighborhood_info(listing_id, neighborhoods_coords):
+    newImplementation.update_neighborhood_info(listing_id, neighborhoods_coords)
+
+def get_neighborhood_coordinates():
+    neighborhood_collection_persistence = Neighborhoods(db)
+    # get all neighborhoods coords
+    neighborhoods_coordinates = neighborhood_collection_persistence.get_neighborhoods_coordinates()
+    return neighborhoods_coordinates
+
+def cast_save_listing_form(request_form):
+    cast_obj = dict()
+    request_form_keys = request_form.keys()
+
+    #  copy elements to new obt
+    for request_form_key in request_form_keys:
+        cast_obj[request_form_key] = request_form[request_form_key]
+
+    #  set right types
+    cast_obj['bathrooms'] = int(cast_obj['bathrooms'])
+    cast_obj['bedrooms'] = int(cast_obj['bedrooms'])
+    cast_obj['latitude'] = float(cast_obj['latitude'])
+    cast_obj['longitude'] = float(cast_obj['longitude'])
+    cast_obj['price'] = int(cast_obj['price'])
+    cast_obj['pictures'] = jsonpickle.decode(request_form['pictures'])
+    cast_obj['lastupdated'] = datetime.datetime.utcnow().isoformat()
+    return cast_obj
+
+
+# create a single listing
+@app.route('/listings', methods=['POST'])
+def save_listing():
+    reponse_obj = Base()
+    try:
+        request_form = request.form
+        listing_dic = cast_save_listing_form(request_form)
+
+        # get all neighborhoods coords
+        neighborhoods_coords = get_neighborhood_coordinates()
+        # save listing in database
+        saved_listing_id = newImplementation.save_listing(listing_dic)
+        # update listing neighborhood info
+        update_neighborhood_info(saved_listing_id, neighborhoods_coords)
+        # prepare object to be responded
+        reponse_obj.Data = jsonpickle.decode(dumps({'_id': saved_listing_id}))
+        BaseUtils.SetOKDTO(reponse_obj)
+    # TODO: IMPLEMENT APROPIATE ERROR HANDLING
+    except Exception as e:
+        BaseUtils.SetUnexpectedErrorDTO(reponse_obj)
+        print "There was an unexpected error: ", str(e)
+        print traceback.format_exc()
+
+    json_obj = jsonpickle.encode(reponse_obj, unpicklable=False)
+    response = Response(json_obj)
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
+    return response
+
 # Filter entries based off of user preferences
 
 @app.route('/')
@@ -65,7 +125,7 @@ def deploy_success():
     return 'This application has deployed successfully.'
 
 @app.route('/listings/filter', methods = ['POST'])
-def filterListings():   
+def filterListings():
     reponseObj = Base()
     try:
 
@@ -74,7 +134,7 @@ def filterListings():
         if "currentPage" in request.form.keys():
             requestPage = request.form['currentPage']
             requestPage = int(requestPage)
-        else: 
+        else:
             requestPage = 1
         if "itemsOnPage" in request.form.keys():
             requestItems = request.form['itemsOnPage']
@@ -163,7 +223,7 @@ def filterListings():
 
                 for must_have in hmust_haves:
                     if hood[must_have] != 1:
-                        negative_score += 20 
+                        negative_score += 20
 
             else :
 
@@ -230,7 +290,7 @@ def filterListings():
 
         sorted_list = sorted(final_filter, key=itemgetter('score'), reverse=True)
 
-        final_list = []     
+        final_list = []
         if len(score_list) >0:
             arr_score = numpy.array([score_list])
             mean_score =  int(numpy.mean(arr_score))
@@ -242,7 +302,7 @@ def filterListings():
             mean_price =  int(numpy.mean(arr_price))
             standard_dev_price =  int(numpy.std(arr_price))
             lower_price = mean_price-(int(standard_dev_price*1))
-            upper_price = mean_price+(int(standard_dev_price*2))        
+            upper_price = mean_price+(int(standard_dev_price*2))
 
             for element in sorted_list:
                 if element["score"] in range(lower_score, upper_score) and element["price"] in range(lower_price, upper_price):
@@ -264,9 +324,9 @@ def filterListings():
             user_email = information["email"]
 
         # returns the list of data objects
-    
+
         reponseObj.Data = ListingList(4,jsonpickle.decode(dumps(final_list)),complete_length, user_email, pages)
-        BaseUtils.SetOKDTO(reponseObj)  
+        BaseUtils.SetOKDTO(reponseObj)
 
 
 
@@ -275,19 +335,19 @@ def filterListings():
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
     response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 
 @app.route('/listings/<listingid>', methods = ['GET'])
 def getListingById(listingid= None):
-    
+
     reponseObj = Base()
-    
+
     try:
         if listingid is not None:
             ## select mondodb collection
@@ -296,24 +356,24 @@ def getListingById(listingid= None):
             listingsObject = listingsCollection.find_one({'_id': ObjectId(listingid)})
             ## serialize listing
             reponseObj.Data = jsonpickle.decode(dumps(listingsObject))
-            BaseUtils.SetOKDTO(reponseObj)  
+            BaseUtils.SetOKDTO(reponseObj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-        
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/userpreferences/<userPreferencesId>', methods = ['GET'])
-def getUserPreferences(userPreferencesId= None):    
+def getUserPreferences(userPreferencesId= None):
     reponseObj = Base()
     # {"apartmentType":"1 Bedroom" , "personType":"student","hoodType":"classic", "budget":5000, "moveIn":20143101}
-    
+
     try:
         if(userPreferencesId != None):
             preferencesCollection = db['preferences']
@@ -324,28 +384,28 @@ def getUserPreferences(userPreferencesId= None):
                 filtersObj = pref_obj['filters']
             reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_obj['_id'])), filtersObj)
             print "reponseObj.Data" , reponseObj.Data
-            BaseUtils.SetOKDTO(reponseObj)  
-            
+            BaseUtils.SetOKDTO(reponseObj)
+
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
     response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/userpreferences', methods = ['POST'])
-def saveUserPreferences():  
+def saveUserPreferences():
     reponseObj = Base()
     # {"apartmentType":"1 Bedroom" , "personType":"student","hoodType":"classic", "budget":5000, "moveIn":20143101}
-    
+
     try:
         filtersObj = {}
-        
+
         ## identify filters
         f = request.form
         if 'filters' in f:
@@ -353,8 +413,8 @@ def saveUserPreferences():
             filtersObj = jsonpickle.decode(request.form['filters'])
             print "type(filtersObj)" , type(filtersObj)
             print "filtersObj" , filtersObj
-        
-        
+
+
         hood_must_have = dict()
         hood_must_have["keywords"] = []
         hood_delighter = dict()
@@ -419,30 +479,49 @@ def saveUserPreferences():
         pref_id = preferencesCollection.insert(db_dict)
         print "pref_id" , pref_id
         reponseObj.Data = Preference(jsonpickle.decode(dumps(pref_id)), filtersObj)
+        #reponseObj.Data = {"preferenceId" : pref_id}
         print "reponseObj.Data" , reponseObj.Data
-        
+        # fromadd = "concierge@socrex.com"
+        # toadd = information["email"]
+        # msg = MIMEMultipart()
+        # msg['From'] = fromadd
+        # msg['To'] = toadd
+        # msg['Subject'] = "Socrex - Concierge reply"
+        # body = "Thank you for using our service, to view your personalized listings please follow this url:\n \nhttp://frontend-socrex-stage.herokuapp.com/#/listings/filter/"+str(pref_id)
+        # msg.attach(MIMEText(body, 'plain'))
 
-    
-        BaseUtils.SetOKDTO(reponseObj)  
+        # # Send the message via our own SMTP server, but don't include the
+        # # envelope header.
+        # s = smtplib.SMTP('smtp.gmail.com:587')
+        # s.ehlo()
+        # s.starttls()
+        # s.ehlo()
+        # s.login(fromadd, "monaco123")
+        # text = msg.as_string()
+        # s.sendmail(fromadd, toadd, text)
+        # s.quit()
+
+
+        BaseUtils.SetOKDTO(reponseObj)
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
     response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')  
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 
-    
+
 @app.route('/listing/<listingid>/user/<useremail>/sendemail', methods = ['POST'])
 def sendEmailToContact(listingid= None, useremail=None ):
-    
+
     reponseObj = Base()
-    
+
     try:
         isSuccessful = newImplementation.sendEmailToContact(listingid, useremail)
         if isSuccessful:
@@ -455,20 +534,20 @@ def sendEmailToContact(listingid= None, useremail=None ):
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/conciergeEmail', methods = ['POST'])
 def sendEmailConcierge():
-    
+
     reponseObj = Base()
     json_object = request.form.keys()
     json_resquest = json.loads(json_object[0])
-    
+
     try:
         email = json_resquest["email"]
         name = json_resquest["name"]
@@ -486,18 +565,18 @@ def sendEmailConcierge():
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/listing/<listingid>/user/<useremail>/verifyavailability', methods = ['POST'])
 def verifyListingAvailability(listingid= None, useremail=None ):
-    
+
     reponseObj = Base()
-    
+
     try:
         isSuccessful = newImplementation.verifyListingAvailability(listingid, useremail)
         if isSuccessful:
@@ -510,18 +589,18 @@ def verifyListingAvailability(listingid= None, useremail=None ):
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/listing/<listingid>/user/<useremail>/expertreview', methods = ['POST'])
 def expertReview(listingid= None, useremail=None ):
-    
+
     reponseObj = Base()
-    
+
     try:
         isSuccessful = newImplementation.expertReview(listingid, useremail)
         if isSuccessful:
@@ -534,18 +613,18 @@ def expertReview(listingid= None, useremail=None ):
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/listing/<listingid>/user/<useremail>/virtualtour', methods = ['POST'])
 def virtualTour(listingid= None, useremail=None ):
-    
+
     reponseObj = Base()
-    
+
     try:
         isSuccessful = newImplementation.virtualTour(listingid, useremail)
         if isSuccessful:
@@ -558,18 +637,18 @@ def virtualTour(listingid= None, useremail=None ):
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/listing/<listingid>/listingdetails', methods = ['POST'])
 def listingDetails(listingid= None, useremail=None ):
-    
+
     reponseObj = Base()
-    
+
     try:
         isSuccessful = newImplementation.listingDetails(listingid)
         if isSuccessful:
@@ -582,18 +661,18 @@ def listingDetails(listingid= None, useremail=None ):
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 @app.route('/listing/<listingid>/user/<useremail>/originallisting', methods = ['POST'])
 def originalListing(listingid= None, useremail=None ):
-    
+
     reponseObj = Base()
-    
+
     try:
         isSuccessful = newImplementation.originalListing(listingid, useremail)
         if isSuccessful:
@@ -606,18 +685,23 @@ def originalListing(listingid= None, useremail=None ):
         BaseUtils.SetUnexpectedErrorDTO(reponseObj)
         print "There was an unexpected error: " , str(e)
         print traceback.format_exc()
-    
+
     jsonObj = jsonpickle.encode(reponseObj, unpicklable=False)
-    response = Response(jsonObj)    
+    response = Response(jsonObj)
     response.headers.add('Access-Control-Allow-Origin', '*')
-    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')      
+    response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
     return response
 
 if __name__ == '__main__':
-    app.debug = True 
+    app.debug = True
     # enable to run in cloud9
     # hostip = os.environ['IP']
+    hostip = "0.0.0.0"
     # hostport = int(os.environ['PORT'])
-    # app.run(host=hostip,port=hostport)
+    hostport = int(8080)
+    # hostip = os.getenv('IP', '0.0.0.0')
+    # hostport = os.getenv('PORT', 8080)
+    # print "type(hostport)" , type(hostport)
+    app.run(host=hostip,port=hostport)
     # enable to run in heroku
-    app.run()
+    # app.run()
