@@ -46,6 +46,7 @@ import datetime
 
 #load api services
 from services.useractions.addshortlist import add_shortlist_api
+from services.useractions.getshortlist import get_shortlist_api
 
 
 # load constants
@@ -67,6 +68,7 @@ app = Flask(__name__)
 # add blueprint services
 
 app.register_blueprint(add_shortlist_api)
+app.register_blueprint(get_shortlist_api)
 
 def update_neighborhood_info(listing_id, neighborhoods_coords):
     newImplementation.update_neighborhood_info(listing_id, neighborhoods_coords)

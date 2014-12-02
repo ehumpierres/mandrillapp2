@@ -27,29 +27,20 @@ MONGO_DB = "app31803464"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-add_shortlist_api = Blueprint('add_shortlist_api', __name__)
+get_shortlist_api = Blueprint('get_shortlist_api', __name__)
 
-@add_shortlist_api.route('/shortlist', methods=['POST'])
-def add_shortlist():
+@get_shortlist_api.route('/user/<userid>/shortlist', methods=['GET'])
+def get_shortlist(userid= None):
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingid']
-        request_user = request.form['userid']
+        if userid is not None:
 
-        listingsCollection = db['listings']
-        usersCollection = db['userstest']
+            usersCollection = db['userstest']
 
-        user = usersCollection.find_one({"_id" : ObjectId(request_user)})
-        listing = listingsCollection.find_one({"_id" : ObjectId(request_listing)})
+            user = usersCollection.find_one({"_id" : ObjectId(userid)})
 
-        shortlist = user['shortlist']
-        shortlist.append(listing)
-
-        usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
-
-        reponse_obj.Data = jsonpickle.decode(dumps({'_id': user['_id']}))
-        BaseUtils.SetOKDTO(reponse_obj)
-
+            reponse_obj.Data = jsonpickle.decode(dumps({'shortlist': user['shortlist']}))
+            BaseUtils.SetOKDTO(reponse_obj)
         
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
