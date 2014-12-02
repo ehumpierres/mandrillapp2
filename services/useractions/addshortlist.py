@@ -37,7 +37,7 @@ def add_shortlist():
         request_user = request.form['userid']
 
         listingsCollection = db['listings']
-        usersCollection = db['userstest']
+        usersCollection = db['users']
 
         user = usersCollection.find_one({"_id" : ObjectId(request_user)})
         listing = listingsCollection.find_one({"_id" : ObjectId(request_listing)})

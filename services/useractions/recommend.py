@@ -27,20 +27,34 @@ MONGO_DB = "app31803464"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-get_shortlist_api = Blueprint('get_shortlist_api', __name__)
+recommend_api = Blueprint('recommend_api', __name__)
 
-@get_shortlist_api.route('/user/<userid>/shortlist', methods=['GET'])
-def get_shortlist(userid= None):
+@recommend_api.route('/recommend', methods=['POST'])
+def recommend():
     reponse_obj = Base()
     try:
-        if userid is not None:
+        request_listing = request.form['listingid']
+        request_user = request.form['userid']
+        request_trotter = request.form['trotterid']
 
-            usersCollection = db['users']
+        listingsCollection = db['listings']
+        usersCollection = db['users']
+        trottersCollection = db['trotters']
 
-            user = usersCollection.find_one({"_id" : ObjectId(userid)})
+        user = usersCollection.find_one({"_id" : ObjectId(request_user)})
+        listing = listingsCollection.find_one({"_id" : ObjectId(request_listing)})
+        trotter = listingsCollection.find_one({"_id" : ObjectId(request_trotter)})
 
-            reponse_obj.Data = jsonpickle.decode(dumps({'shortlist': user['shortlist']}))
-            BaseUtils.SetOKDTO(reponse_obj)
+        listing['recommended'] = 1
+
+        shortlist = user['shortlist']
+        shortlist.append(listing)
+
+        usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
+
+        reponse_obj.Data = jsonpickle.decode(dumps({'_id': user['_id']}))
+        BaseUtils.SetOKDTO(reponse_obj)
+
         
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
