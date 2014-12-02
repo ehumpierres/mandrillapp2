@@ -44,6 +44,9 @@ from persistence.collections.neighborhoods import Neighborhoods
 
 import datetime
 
+#load api services
+from services.addshortlist import add_shortlist_api
+
 
 # load constants
 MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
@@ -60,6 +63,10 @@ newImplementation = Implementations()
 
 # init flask app
 app = Flask(__name__)
+
+# add blueprint services
+
+app.register_blueprint(add_shortlist_api)
 
 def update_neighborhood_info(listing_id, neighborhoods_coords):
     newImplementation.update_neighborhood_info(listing_id, neighborhoods_coords)
