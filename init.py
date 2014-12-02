@@ -45,7 +45,7 @@ from persistence.collections.neighborhoods import Neighborhoods
 import datetime
 
 #load api services
-from services.addshortlist import add_shortlist_api
+from services.useractions.addshortlist import add_shortlist_api
 
 
 # load constants

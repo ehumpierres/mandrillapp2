@@ -33,7 +33,6 @@ add_shortlist_api = Blueprint('add_shortlist_api', __name__)
 def add_shortlist():
     reponse_obj = Base()
     try:
-        print "Adding shortlist"
         request_listing = request.form['listingid']
         request_user = request.form['userid']
 
