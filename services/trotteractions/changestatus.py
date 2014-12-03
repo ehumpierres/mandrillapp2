@@ -27,27 +27,34 @@ MONGO_DB = "app30172457"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-add_shortlist_api = Blueprint('add_shortlist_api', __name__)
+change_status_api = Blueprint('change_status_api', __name__)
 
-@add_shortlist_api.route('/shortlist', methods=['POST'])
-def add_shortlist():
+@change_status_api.route('/changestatus', methods=['POST'])
+def change_status():
     reponse_obj = Base()
     try:
         request_listing = request.form['listingid']
         request_user = request.form['userid']
+        request_status = request.form['status']
 
-        listingsCollection = db['listings']
         usersCollection = db['users']
 
         user = usersCollection.find_one({"_id" : ObjectId(request_user)})
-        listing = listingsCollection.find_one({"_id" : ObjectId(request_listing)})
 
         shortlist = user['shortlist']
-        shortlist.append(listing)
+        result_bool = False
+
+        for entry in shortlist:
+            print entry['_id']
+            print request_listing
+            if entry['_id'] == ObjectId(request_listing):
+                entry['status'] = request_status
+                print entry['status']
+                result_bool = True
 
         usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
 
-        reponse_obj.Data = jsonpickle.decode(dumps({'_id': user['_id']}))
+        reponse_obj.Data = jsonpickle.decode(dumps({'result': result_bool}))
         BaseUtils.SetOKDTO(reponse_obj)
 
         
