@@ -5,6 +5,8 @@ from flask import Response
 from flask import Blueprint
 
 import traceback
+import time
+from datetime import date
 
 # json handling
 import jsonpickle
@@ -18,24 +20,24 @@ from persistence.mongodatabase import mongoDatabase
 
 
 # load constants
-# MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
-# MONGO_DB = "app31803464"
-MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-MONGO_DB = "app30172457"
+MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
+MONGO_DB = "app31803464"
+# MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+# MONGO_DB = "app30172457"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-change_status_api = Blueprint('change_status_api', __name__)
+add_user_comment_api = Blueprint('add_user_comment_api', __name__)
 
-@change_status_api.route('/changestatus', methods=['POST'])
+@add_user_comment_api.route('/addusercomment', methods=['POST'])
 def change_status():
     reponse_obj = Base()
     try:
         request_listing = request.form['listingid']
         request_user = request.form['userid']
-        request_status = request.form['status']
+        request_comment = request.form['comment']
 
         usersCollection = db['users']
 
@@ -43,11 +45,17 @@ def change_status():
 
         shortlist = user['shortlist']
         result_bool = False
+        comment = dict()
+        comment['commenter'] = user['fullname']
+        comment['timestamp'] = time.time()
+        comment['text'] = request_comment
+        comment['type'] = 'user'
 
         for entry in shortlist:
             if entry['_id'] == ObjectId(request_listing):
-                entry['status'] = request_status
-                print entry['status']
+                if 'comments' not in entry.keys():
+                    entry['comments'] = []
+                entry['comments'].append(comment)
                 result_bool = True
 
         usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})

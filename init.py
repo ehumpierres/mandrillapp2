@@ -4,23 +4,23 @@ from flask import request
 from flask import Response
 
 # Import smtplib for the actual sending function
-import smtplib
-from email.MIMEMultipart import MIMEMultipart
-from email.MIMEText import MIMEText
-from business.utils.mailsender import MailSender
+# import smtplib
+# from email.MIMEMultipart import MIMEMultipart
+# from email.MIMEText import MIMEText
+# from business.utils.mailsender import MailSender
 
 #load api services
 #user actions
 from services.useractions.addshortlist import add_shortlist_api
 from services.useractions.getshortlist import get_shortlist_api
 from services.useractions.emailconcierge import concierge_email_api
-# from services.useractions.addcomment import add_user_comment_api
+from services.useractions.addusercomment import add_user_comment_api
 
 #trotter actions
 from services.trotteractions.recommend import recommend_api
 from services.trotteractions.changestatus import change_status_api
 from services.trotteractions.addlisting import add_listing_api
-# from services.trotteractions.addcomment import add_trotter_comment_api
+from services.trotteractions.addtrottercomment import add_trotter_comment_api
 
 #listing actions
 from services.listings.filterlistings import filter_listings_api
@@ -45,6 +45,8 @@ app.register_blueprint(save_preferences_api)
 app.register_blueprint(get_preferences_api)
 app.register_blueprint(concierge_email_api)
 app.register_blueprint(add_listing_api)
+app.register_blueprint(add_trotter_comment_api)
+app.register_blueprint(add_user_comment_api)
 
 @app.route('/')
 def deploy_success():
