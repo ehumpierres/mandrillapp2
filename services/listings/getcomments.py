@@ -5,8 +5,6 @@ from flask import Response
 from flask import Blueprint
 
 import traceback
-import time
-from datetime import date
 
 # json handling
 import jsonpickle
@@ -29,40 +27,28 @@ MONGO_DB = "app31803464"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-add_user_comment_api = Blueprint('add_user_comment_api', __name__)
+get_comments_api = Blueprint('get_comments_api', __name__)
 
-@add_user_comment_api.route('/addusercomment', methods=['POST'])
-def add_user_comment():
+@get_comments_api.route('/user/<userid>/shortlist/<listingid>/comments', methods=['GET'])
+def get_comments(userid= None, listingid= None):
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingid']
-        request_user = request.form['userid']
-        request_comment = request.form['comment']
+        if userid is not None and listingid is not None:
 
-        usersCollection = db['users']
+            usersCollection = db['users']
 
-        user = usersCollection.find_one({"_id" : ObjectId(request_user)})
+            user = usersCollection.find_one({"_id" : ObjectId(userid)})
 
-        shortlist = user['shortlist']
-        result_bool = False
-        comment = dict()
-        comment['commenter'] = user['fullname']
-        comment['timestamp'] = time.time()
-        comment['text'] = request_comment
-        comment['type'] = 'user'
+            shortlist = user['shortlist']
+            comments_result = []
 
-        for entry in shortlist:
-            if entry['_id'] == ObjectId(request_listing):
-                if 'comments' not in entry.keys():
-                    entry['comments'] = []
-                entry['comments'].append(comment)
-                result_bool = True
+            for entry in shortlist:
+                if entry['_id'] == ObjectId(listingid):
+                    if 'comments' in entry.keys():
+                        comments_result = entry['comments']
 
-        usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
-
-        reponse_obj.Data = jsonpickle.decode(dumps({'result': result_bool}))
-        BaseUtils.SetOKDTO(reponse_obj)
-
+            reponse_obj.Data = jsonpickle.decode(dumps({'comments': comments_result}))
+            BaseUtils.SetOKDTO(reponse_obj)
         
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:

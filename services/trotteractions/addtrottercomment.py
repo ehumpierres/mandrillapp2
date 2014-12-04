@@ -32,7 +32,7 @@ db = myDB.getDB(MONGO_DB)
 add_trotter_comment_api = Blueprint('add_trotter_comment_api', __name__)
 
 @add_trotter_comment_api.route('/addtrottercomment', methods=['POST'])
-def change_status():
+def add_trotter_comment():
     reponse_obj = Base()
     try:
         request_listing = request.form['listingid']
