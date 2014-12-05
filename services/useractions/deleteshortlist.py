@@ -18,29 +18,41 @@ from persistence.mongodatabase import mongoDatabase
 
 
 # load constants
-MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
-MONGO_DB = "app31803464"
-# MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-# MONGO_DB = "app30172457"
+# MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
+# MONGO_DB = "app31803464"
+MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+MONGO_DB = "app30172457"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-get_comments_api = Blueprint('get_comments_api', __name__)
+delete_shortlist_api = Blueprint('delete_shortlist_api', __name__)
 
-@get_comments_api.route('/user/<userid>/comments', methods=['GET'])
-def get_comments(userid= None):
+@delete_shortlist_api.route('/delete_shortlist', methods=['POST'])
+def change_status():
     reponse_obj = Base()
     try:
-        if userid is not None:
+        request_listing = request.form['listingid']
+        request_user = request.form['userid']
+        request_status = request.form['status']
 
-            usersCollection = db['users']
-            user = usersCollection.find_one({"_id" : ObjectId(userid)})
-            comments = user['comments']
+        usersCollection = db['users']
 
-            reponse_obj.Data = jsonpickle.decode(dumps({'comments': comments}))
-            BaseUtils.SetOKDTO(reponse_obj)
+        user = usersCollection.find_one({"_id" : ObjectId(request_user)})
+
+        shortlist = user['shortlist']
+        result_bool = False
+
+        for entry in shortlist:
+            if entry['_id'] == ObjectId(request_listing):
+                shortlist.remove(entry)
+
+        usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
+
+        reponse_obj.Data = jsonpickle.decode(dumps({'result': result_bool}))
+        BaseUtils.SetOKDTO(reponse_obj)
+
         
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:

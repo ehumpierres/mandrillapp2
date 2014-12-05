@@ -35,7 +35,6 @@ add_trotter_comment_api = Blueprint('add_trotter_comment_api', __name__)
 def add_trotter_comment():
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingid']
         request_user = request.form['userid']
         request_trotter = request.form['trotterid']
         request_comment = request.form['comment']
@@ -46,24 +45,26 @@ def add_trotter_comment():
         user = usersCollection.find_one({"_id" : ObjectId(request_user)})
         trotter = trottersCollection.find_one({"_id" : ObjectId(request_trotter)})
 
-        shortlist = user['shortlist']
-        result_bool = False
+        comments = user['comments']
         comment = dict()
         comment['commenter'] = trotter['fullname']
+        comment_date = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         comment['timestamp'] = time.time()
+        comment['date'] = comment_date
         comment['text'] = request_comment
         comment['type'] = 'trotter'
+        comments.append(comment)
 
-        for entry in shortlist:
-            if entry['_id'] == ObjectId(request_listing):
-                if 'comments' not in entry.keys():
-                    entry['comments'] = []
-                entry['comments'].append(comment)
-                result_bool = True
+        # for entry in shortlist:
+        #     if entry['_id'] == ObjectId(request_listing):
+        #         if 'comments' not in entry.keys():
+        #             entry['comments'] = []
+        #         entry['comments'].append(comment)
+        #         result_bool = True
 
-        usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
+        usersCollection.update({'_id':user['_id']}, {'$set':{'comments':comments}})
 
-        reponse_obj.Data = jsonpickle.decode(dumps({'result': result_bool}))
+        reponse_obj.Data = jsonpickle.decode(dumps({'result': True}))
         BaseUtils.SetOKDTO(reponse_obj)
 
         
