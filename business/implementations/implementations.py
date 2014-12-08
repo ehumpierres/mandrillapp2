@@ -76,14 +76,14 @@ class Implementations():
 
         return returnSuccess
 
-    def sendEmailConcierge(self, email, username, userphone, listing_url, listingid):
+    def sendEmailConcierge(self, email, username, userphone, listing_url, listingid, request_type):
         returnSuccess = False
 
-        if email is not None and username is not None and userphone is not None and listing_url is not None and listingid is not None:
+        if email is not None and username is not None and userphone is not None and listing_url is not None and listingid is not None and request_type is not None:
             listingCollection = Listings(self.__db__)
 
             subject = str(username) + " - " + str(listingid)
-            body = "User: " + username + "<br> Email: " + email + "<br> Phone: " + userphone + "<br> Url: <a href=\"" + listing_url + "\">" + listing_url + "</a>"
+            body = "User: " + username + "<br> Email: " + email + "<br> Phone: " + userphone + "<br> Url: <a href=\"" + listing_url + "\">" + listing_url + "</a><br>Request: "+request_type
             # get landlord email
             # # instantiate email sender object
             mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@socrex.com', 'monaco123')

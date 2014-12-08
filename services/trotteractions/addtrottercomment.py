@@ -6,8 +6,7 @@ from flask import Blueprint
 
 import traceback
 import time
-from datetime import date
-
+import datetime
 # json handling
 import jsonpickle
 from bson.json_util import dumps

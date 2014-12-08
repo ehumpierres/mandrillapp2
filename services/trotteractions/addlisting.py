@@ -29,6 +29,9 @@ MONGO_DB = "app30172457"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
+newImplementation = Implementations()
+
+
 add_listing_api = Blueprint('add_listing_api', __name__)
 
 def update_neighborhood_info(listing_id, neighborhoods_coords):

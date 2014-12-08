@@ -12,6 +12,7 @@ from flask import Response
 #load api services
 #user actions
 from services.useractions.addshortlist import add_shortlist_api
+from services.useractions.addshortlistbulk import add_bulk_shortlist_api
 from services.useractions.deleteshortlist import delete_shortlist_api
 from services.useractions.getshortlist import get_shortlist_api
 from services.useractions.emailconcierge import concierge_email_api
@@ -38,6 +39,7 @@ app = Flask(__name__)
 # add blueprint services
 
 app.register_blueprint(add_shortlist_api)
+app.register_blueprint(add_bulk_shortlist_api)
 app.register_blueprint(delete_shortlist_api)
 app.register_blueprint(get_shortlist_api)
 app.register_blueprint(recommend_api)

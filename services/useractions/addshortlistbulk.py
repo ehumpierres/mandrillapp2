@@ -5,8 +5,6 @@ from flask import Response
 from flask import Blueprint
 
 import traceback
-import time
-import datetime
 
 # json handling
 import jsonpickle
@@ -29,32 +27,40 @@ MONGO_DB = "app31803464"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-add_user_comment_api = Blueprint('add_user_comment_api', __name__)
+add_bulk_shortlist_api = Blueprint('add_bulk_shortlist_api', __name__)
 
-@add_user_comment_api.route('/addusercomment', methods=['POST'])
-def add_user_comment():
+@add_bulk_shortlist_api.route('/shortlistbulk', methods=['POST'])
+def add_bulk_shortlist():
     reponse_obj = Base()
     try:
+        request_listings = request.form['listingids']
         request_user = request.form['userid']
-        request_comment = request.form['comment']
 
+        request_listings_split = request_listings.split(',')
+
+        bulklistings = []
+        for r_listing in request_listings_split:
+            bulklistings.append(ObjectId(r_listing))
+
+        print bulklistings
+
+        listingsCollection = db['listings']
         usersCollection = db['users']
 
         user = usersCollection.find_one({"_id" : ObjectId(request_user)})
+        listings_result = listingsCollection.find({"_id" : {"$in" : bulklistings}})
 
-        comments = user['comments']
-        comment = dict()
-        comment['commenter'] = user['fullname']
-        comment_date = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
-        comment['timestamp'] = time.time()
-        comment['date'] = comment_date
-        comment['text'] = request_comment
-        comment['type'] = 'user'
-        comments.append(comment)
+        listings = list(listings_result)
 
-        usersCollection.update({'_id':user['_id']}, {'$set':{'comments':comments}})
+        print listings
 
-        reponse_obj.Data = jsonpickle.decode(dumps({'result': True}))
+        shortlist = user['shortlist']
+        for listing in listings:
+            shortlist.append(listing)
+
+        usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
+
+        reponse_obj.Data = jsonpickle.decode(dumps({'_id': user['_id']}))
         BaseUtils.SetOKDTO(reponse_obj)
 
         

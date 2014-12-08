@@ -8,8 +8,11 @@ import traceback
 
 # json handling
 import jsonpickle
+import json
 from bson.json_util import dumps
 from bson.objectid import ObjectId
+
+from business.implementations.implementations import Implementations
 
 from dto.response.classes.base import Base
 from dto.response.utils.baseutils import BaseUtils
@@ -27,6 +30,8 @@ MONGO_DB = "app30172457"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
+newImplementation = Implementations()
+
 concierge_email_api = Blueprint('concierge_email_api', __name__)
 
 @concierge_email_api.route('/conciergeEmail', methods = ['POST'])
@@ -35,6 +40,7 @@ def sendEmailConcierge():
     reponseObj = Base()
     json_object = request.form.keys()
     json_resquest = json.loads(json_object[0])
+    # json_resquest = request.form
 
     try:
         email = json_resquest["email"]
@@ -42,7 +48,8 @@ def sendEmailConcierge():
         phone = json_resquest["phone"]
         listingurl = json_resquest["listingurl"]
         listingid = json_resquest["listingid"]
-        isSuccessful = newImplementation.sendEmailConcierge(email, name, phone, listingurl, listingid)
+        request_type = json_resquest["request_type"]
+        isSuccessful = newImplementation.sendEmailConcierge(email, name, phone, listingurl, listingid, request_type)
         if isSuccessful:
             BaseUtils.SetOKDTO(reponseObj)
         else:
