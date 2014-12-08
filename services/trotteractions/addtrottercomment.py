@@ -9,6 +9,7 @@ import time
 import datetime
 # json handling
 import jsonpickle
+import json
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 
@@ -19,10 +20,10 @@ from persistence.mongodatabase import mongoDatabase
 
 
 # load constants
-# MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
-# MONGO_DB = "app31803464"
-MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-MONGO_DB = "app30172457"
+MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
+MONGO_DB = "app31803464"
+# MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
+# MONGO_DB = "app30172457"
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
@@ -34,9 +35,13 @@ add_trotter_comment_api = Blueprint('add_trotter_comment_api', __name__)
 def add_trotter_comment():
     reponse_obj = Base()
     try:
-        request_user = request.form['userid']
-        request_trotter = request.form['trotterid']
-        request_comment = request.form['comment']
+
+        json_object = request.form.keys()
+        requestObj = json.loads(json_object[0])
+
+        request_user = requestObj['userid']
+        request_trotter = requestObj['trotterid']
+        request_comment = requestObj['comment']
 
         usersCollection = db['users']
         trottersCollection = db['trotters']
@@ -63,7 +68,7 @@ def add_trotter_comment():
 
         usersCollection.update({'_id':user['_id']}, {'$set':{'comments':comments}})
 
-        reponse_obj.Data = jsonpickle.decode(dumps({'result': True}))
+        reponse_obj.Data = jsonpickle.decode(dumps({'comments': comments}))
         BaseUtils.SetOKDTO(reponse_obj)
 
         

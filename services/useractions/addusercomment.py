@@ -9,6 +9,7 @@ import time
 import datetime
 
 # json handling
+import json
 import jsonpickle
 from bson.json_util import dumps
 from bson.objectid import ObjectId
@@ -35,8 +36,11 @@ add_user_comment_api = Blueprint('add_user_comment_api', __name__)
 def add_user_comment():
     reponse_obj = Base()
     try:
-        request_user = request.form['userid']
-        request_comment = request.form['comment']
+        json_object = request.form.keys()
+        requestObj = json.loads(json_object[0])
+
+        request_user = requestObj['userid']
+        request_comment = requestObj['comment']
 
         usersCollection = db['users']
 
@@ -54,7 +58,7 @@ def add_user_comment():
 
         usersCollection.update({'_id':user['_id']}, {'$set':{'comments':comments}})
 
-        reponse_obj.Data = jsonpickle.decode(dumps({'result': True}))
+        reponse_obj.Data = jsonpickle.decode(dumps({'comments': comments}))
         BaseUtils.SetOKDTO(reponse_obj)
 
         
