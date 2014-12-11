@@ -28,6 +28,7 @@ from services.trotteractions.addtrottercomment import add_trotter_comment_api
 from services.listings.filterlistings import filter_listings_api
 from services.listings.getlisting import get_listing_api
 from services.listings.getcomments import get_comments_api
+from services.listings.getlistingsdetails import get_listing_details_api
 
 #preferences actions
 from services.preferences.savepreferences import save_preferences_api
@@ -53,6 +54,7 @@ app.register_blueprint(add_listing_api)
 app.register_blueprint(add_trotter_comment_api)
 app.register_blueprint(add_user_comment_api)
 app.register_blueprint(get_comments_api)
+app.register_blueprint(get_listing_details_api)
 
 
 @app.route('/')
