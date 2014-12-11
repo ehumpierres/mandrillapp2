@@ -17,6 +17,9 @@ from services.useractions.deleteshortlist import delete_shortlist_api
 from services.useractions.getshortlist import get_shortlist_api
 from services.useractions.emailconcierge import concierge_email_api
 from services.useractions.addusercomment import add_user_comment_api
+from services.useractions.createuser import create_user_api
+
+
 
 #trotter actions
 from services.trotteractions.recommend import recommend_api
@@ -55,6 +58,7 @@ app.register_blueprint(add_trotter_comment_api)
 app.register_blueprint(add_user_comment_api)
 app.register_blueprint(get_comments_api)
 app.register_blueprint(get_listing_details_api)
+app.register_blueprint(create_user_api)
 
 
 @app.route('/')
