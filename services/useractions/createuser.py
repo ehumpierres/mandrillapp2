@@ -16,6 +16,8 @@ from dto.response.utils.baseutils import BaseUtils
 
 from persistence.mongodatabase import mongoDatabase
 
+from persistence.collections.listings import Listings
+
 
 # load constants
 # MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
@@ -40,7 +42,15 @@ def create_user():
         user_auth0_user_id = request.form['auth0UserId']
         user_shortlist_list = jsonpickle.decode(request.form['shortlist'])
 
+        user_shortlist_list_object_id = []
+        for user_shortlist_list_element in user_shortlist_list:
+            user_shortlist_list_object_id.append(ObjectId(user_shortlist_list_element))
+
         users_collection = db['users']
+        listings_collection = db['listings']
+
+        shortlist_listings_cursors = listings_collection.find({"_id" : {"$in" : user_shortlist_list_object_id}})
+        shortlist_listings_list = list(shortlist_listings_cursors)
 
         user_obj = {
             'firstname': user_first_name,
@@ -49,7 +59,7 @@ def create_user():
             'phone': user_phone,
             'auth0userid': user_auth0_user_id,
             'comments': [],
-            'shortlist': user_shortlist_list,
+            'shortlist': shortlist_listings_list,
             'applylist': []
         }
 

@@ -32,6 +32,9 @@ class Listings():
             listing_obj = self.__collectionObject__.update({'_id': ObjectId(listing_id)},{"$set":{'neighborhood':neighborhood_obj}} )
             return_value = True
         return return_value
+
+    def get_listings_by_ids(self, listings_ids):
+        return self.__collectionObject__.find({"_id" : {"$in" : listings_ids}})
         
 
     def getLandLordEmailByListingId(self , listingid):
