@@ -33,8 +33,8 @@ change_status_api = Blueprint('change_status_api', __name__)
 def change_status():
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingid']
-        request_user = request.form['userid']
+        request_listing = request.form['listingId']
+        request_user = request.form['userId']
         request_status = request.form['status']
 
         usersCollection = db['users']

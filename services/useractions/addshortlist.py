@@ -41,6 +41,8 @@ def add_shortlist():
 
         user = usersCollection.find_one({"_id" : ObjectId(request_user)})
         listing = listingsCollection.find_one({"_id" : ObjectId(request_listing)})
+        # set status to listing
+        listing['status'] = 'not verified'
 
         shortlist = user['shortlist']
         shortlist.append(listing)
