@@ -28,14 +28,13 @@ myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
 delete_shortlist_api = Blueprint('delete_shortlist_api', __name__)
-
+# TODO: change to delete method and test with front end, also change teh url to /shortlist
 @delete_shortlist_api.route('/delete_shortlist', methods=['POST'])
 def change_status():
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingid']
-        request_user = request.form['userid']
-        request_status = request.form['status']
+        request_listing = request.form['listingId']
+        request_user = request.form['userId']
 
         usersCollection = db['users']
 
