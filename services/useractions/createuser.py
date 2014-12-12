@@ -38,6 +38,7 @@ def create_user():
         user_email = request.form['email']
         user_phone = request.form['phone']
         user_auth0_user_id = request.form['auth0UserId']
+        user_shortlist_list = jsonpickle.decode(request.form['shortlist'])
 
         users_collection = db['users']
 
@@ -48,11 +49,13 @@ def create_user():
             'phone': user_phone,
             'auth0userid': user_auth0_user_id,
             'comments': [],
-            'shortlist': [],
+            'shortlist': user_shortlist_list,
             'applylist': []
         }
 
-        users_collection.insert(user_obj)
+        return_user_id = users_collection.insert(user_obj)
+
+        reponse_obj.Data = jsonpickle.decode(dumps({'UserId': return_user_id}))
 
         BaseUtils.SetOKDTO(reponse_obj)
         

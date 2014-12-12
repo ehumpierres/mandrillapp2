@@ -33,8 +33,8 @@ add_shortlist_api = Blueprint('add_shortlist_api', __name__)
 def add_shortlist():
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingid']
-        request_user = request.form['userid']
+        request_listing = request.form['listingId']
+        request_user = request.form['userId']
 
         listingsCollection = db['listings']
         usersCollection = db['users']
@@ -47,7 +47,6 @@ def add_shortlist():
 
         usersCollection.update({'_id':user['_id']}, {'$set':{'shortlist':shortlist}})
 
-        reponse_obj.Data = jsonpickle.decode(dumps({'_id': user['_id']}))
         BaseUtils.SetOKDTO(reponse_obj)
 
         
