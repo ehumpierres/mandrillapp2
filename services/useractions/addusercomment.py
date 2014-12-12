@@ -48,7 +48,8 @@ def add_user_comment():
 
         comments = user['comments']
         comment = dict()
-        comment['commenter'] = user['fullname']
+        comment['commenter_first'] = user['firstname']
+        comment['commenter_last'] = user['lastname']
         comment_date = datetime.datetime.fromtimestamp(time.time()).strftime('%Y-%m-%d %H:%M:%S')
         comment['timestamp'] = time.time()
         comment['date'] = comment_date
