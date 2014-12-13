@@ -12,6 +12,7 @@ from flask import Response
 #load api services
 #user actions
 from services.useractions.addshortlist import add_shortlist_api
+from services.useractions.addapplylist import add_applylist_api
 from services.useractions.addshortlistbulk import add_bulk_shortlist_api
 from services.useractions.deleteshortlist import delete_shortlist_api
 from services.useractions.getshortlist import get_shortlist_api
@@ -20,12 +21,15 @@ from services.useractions.addusercomment import add_user_comment_api
 from services.useractions.createuser import create_user_api
 
 
-
 #trotter actions
 from services.trotteractions.recommend import recommend_api
 from services.trotteractions.changestatus import change_status_api
 from services.trotteractions.addlisting import add_listing_api
+from services.trotteractions.addvideolink import add_video_link_api
+from services.trotteractions.adddocumentlink import add_document_link_api
 from services.trotteractions.addtrottercomment import add_trotter_comment_api
+from services.trotteractions.addlisting import add_listing_api
+
 
 #listing actions
 from services.listings.filterlistings import filter_listings_api
@@ -43,6 +47,7 @@ app = Flask(__name__)
 # add blueprint services
 
 app.register_blueprint(add_shortlist_api)
+app.register_blueprint(add_applylist_api)
 app.register_blueprint(add_bulk_shortlist_api)
 app.register_blueprint(delete_shortlist_api)
 app.register_blueprint(get_shortlist_api)
@@ -53,6 +58,8 @@ app.register_blueprint(get_listing_api)
 app.register_blueprint(save_preferences_api)
 app.register_blueprint(get_preferences_api)
 app.register_blueprint(concierge_email_api)
+app.register_blueprint(add_video_link_api)
+app.register_blueprint(add_document_link_api)
 app.register_blueprint(add_listing_api)
 app.register_blueprint(add_trotter_comment_api)
 app.register_blueprint(add_user_comment_api)
