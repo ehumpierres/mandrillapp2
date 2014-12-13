@@ -42,28 +42,40 @@ def create_user():
         user_auth0_user_id = request.form['auth0UserId']
         user_shortlist_list = jsonpickle.decode(request.form['shortlist'])
 
-        user_shortlist_list_object_id = []
-        for user_shortlist_list_element in user_shortlist_list:
-            user_shortlist_list_object_id.append(ObjectId(user_shortlist_list_element))
-
         users_collection = db['users']
         listings_collection = db['listings']
 
-        shortlist_listings_cursors = listings_collection.find({"_id" : {"$in" : user_shortlist_list_object_id}})
-        shortlist_listings_list = list(shortlist_listings_cursors)
+        #validate existing user
+        user = users_collection.find_one({'email': user_email})
+        print "user" , user
 
-        user_obj = {
-            'firstname': user_first_name,
-            'lastname': user_last_name,
-            'email': user_email,
-            'phone': user_phone,
-            'auth0userid': user_auth0_user_id,
-            'comments': [],
-            'shortlist': shortlist_listings_list,
-            'applylist': []
-        }
+        return_user_id = None
+        # TODO: fix this, the idea is not wo overwrite the shortlist. This is suposed to be done in front end, further auth0 info is required.
+        if user is None:
 
-        return_user_id = users_collection.insert(user_obj)
+            user_shortlist_list_object_id = []
+            for user_shortlist_list_element in user_shortlist_list:
+                user_shortlist_list_object_id.append(ObjectId(user_shortlist_list_element))
+
+
+
+            shortlist_listings_cursors = listings_collection.find({"_id" : {"$in" : user_shortlist_list_object_id}})
+            shortlist_listings_list = list(shortlist_listings_cursors)
+
+            user_obj = {
+                'firstname': user_first_name,
+                'lastname': user_last_name,
+                'email': user_email,
+                'phone': user_phone,
+                'auth0userid': user_auth0_user_id,
+                'comments': [],
+                'shortlist': shortlist_listings_list,
+                'applylist': []
+            }
+
+            return_user_id = users_collection.insert(user_obj)
+        else:
+            return_user_id = user['_id']
 
         reponse_obj.Data = jsonpickle.decode(dumps({'UserId': return_user_id}))
 
