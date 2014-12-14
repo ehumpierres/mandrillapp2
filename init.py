@@ -16,6 +16,7 @@ from services.useractions.addapplylist import add_applylist_api
 from services.useractions.addshortlistbulk import add_bulk_shortlist_api
 from services.useractions.deleteshortlist import delete_shortlist_api
 from services.useractions.getshortlist import get_shortlist_api
+from services.useractions.getapplylist import get_applylist_api
 from services.useractions.emailconcierge import concierge_email_api
 from services.useractions.addusercomment import add_user_comment_api
 from services.useractions.createuser import create_user_api
@@ -51,6 +52,7 @@ app.register_blueprint(add_applylist_api)
 app.register_blueprint(add_bulk_shortlist_api)
 app.register_blueprint(delete_shortlist_api)
 app.register_blueprint(get_shortlist_api)
+app.register_blueprint(get_applylist_api)
 app.register_blueprint(recommend_api)
 app.register_blueprint(change_status_api)
 app.register_blueprint(filter_listings_api)

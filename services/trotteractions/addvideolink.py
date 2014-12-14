@@ -47,7 +47,6 @@ def add_video_link():
         for entry in applylist:
             if entry['_id'] == ObjectId(request_listing):
                 entry['video_link'] = request_link
-                print entry['videourl']
                 result_bool = True
 
         usersCollection.update({'_id':user['_id']}, {'$set':{'applylist':applylist}})

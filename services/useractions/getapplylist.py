@@ -27,33 +27,20 @@ MONGO_DB = "app30172457"
 myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
-add_document_link_api = Blueprint('add_document_link_api', __name__)
+get_applylist_api = Blueprint('get_applylist_api', __name__)
 
-@add_document_link_api.route('/adddocumentlink', methods=['POST'])
-def add_document_link():
+@get_applylist_api.route('/user/<userid>/applylist', methods=['GET'])
+def get_applylist(userid= None):
     reponse_obj = Base()
     try:
-        request_listing = request.form['listingId']
-        request_user = request.form['userId']
-        request_link = request.form['document_link']
+        if userid is not None:
 
-        usersCollection = db['users']
+            usersCollection = db['users']
 
-        user = usersCollection.find_one({"_id" : ObjectId(request_user)})
+            user = usersCollection.find_one({"_id" : ObjectId(userid)})
 
-        applylist = user['applylist']
-        result_bool = False
-
-        for entry in applylist:
-            if entry['_id'] == ObjectId(request_listing):
-                entry['document_link'] = request_link
-                result_bool = True
-
-        usersCollection.update({'_id':user['_id']}, {'$set':{'applylist':applylist}})
-
-        reponse_obj.Data = jsonpickle.decode(dumps({'result': result_bool}))
-        BaseUtils.SetOKDTO(reponse_obj)
-
+            reponse_obj.Data = jsonpickle.decode(dumps({'applylist': user['applylist']}))
+            BaseUtils.SetOKDTO(reponse_obj)
         
     # TODO: IMPLEMENT APROPIATE ERROR HANDLING
     except Exception as e:
