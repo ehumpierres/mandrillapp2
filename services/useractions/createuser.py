@@ -39,6 +39,11 @@ def create_user():
         user_last_name = request.form['lastName']
         user_email = request.form['email']
         user_phone = request.form['phone']
+        user_movein = request.form['movein']
+        user_hood = request.form['hoodType']
+        user_apt = request.form['aptType']
+        user_person = request.form['personType']
+        user_budget = request.form['budget']
         user_auth0_user_id = request.form['auth0UserId']
         user_shortlist_list = jsonpickle.decode(request.form['shortlist'])
 
@@ -67,6 +72,11 @@ def create_user():
                 'lastname': user_last_name,
                 'email': user_email,
                 'phone': user_phone,
+                'movein': user_movein,
+                'personType': user_person,
+                'hoodType': user_hood,
+                'aptType': user_apt,
+                'budget': budget,
                 'auth0userid': user_auth0_user_id,
                 'comments': [],
                 'shortlist': shortlist_listings_list,
