@@ -86,9 +86,9 @@ class Implementations():
             body = "User: " + username + "<br> Email: " + email + "<br> Phone: " + userphone + "<br> Url: <a href=\"" + listing_url + "\">" + listing_url + "</a><br>Request: "+request_type
             # get landlord email
             # # instantiate email sender object
-            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@socrex.com', 'monaco123')
+            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@gotrotter.com', 'trotterisnumber1')
             ## send email
-            mailSenderObj.sendEmail('concierge@socrex.com', 'concierge@socrex.com', subject, body)
+            mailSenderObj.sendEmail('concierge@gotrotter.com', 'concierge@gotrotter.com', subject, body)
             ## email quit sender object
             mailSenderObj.quit()
 
