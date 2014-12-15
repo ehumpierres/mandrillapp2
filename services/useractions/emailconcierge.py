@@ -45,10 +45,22 @@ def sendEmailConcierge():
     try:
         email = json_resquest["email"]
         name = json_resquest["name"]
-        phone = json_resquest["phone"]
+        if "phone" in json_resquest.keys():
+            phone = json_resquest["phone"]
+        else: 
+            userid = json_resquest["userid"]
+            usersCollection = db['users']
+            user = usersCollection.find_one({"_id" : ObjectId(userid)})
+            phone = user["phone"]
+
         listingurl = json_resquest["listingurl"]
         listingid = json_resquest["listingid"]
         request_type = json_resquest["request_type"]
+
+        
+
+
+
         isSuccessful = newImplementation.sendEmailConcierge(email, name, phone, listingurl, listingid, request_type)
         if isSuccessful:
             BaseUtils.SetOKDTO(reponseObj)
