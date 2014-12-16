@@ -43,15 +43,18 @@ def sendEmailConcierge():
     # json_resquest = request.form
 
     try:
-        email = json_resquest["email"]
-        name = json_resquest["name"]
-        if "phone" in json_resquest.keys():
-            phone = json_resquest["phone"]
-        else: 
-            userid = json_resquest["userid"]
-            usersCollection = db['users']
-            user = usersCollection.find_one({"_id" : ObjectId(userid)})
-            phone = user["phone"]
+
+        # if "phone" in json_resquest.keys():
+        #     phone = json_resquest["phone"]
+        # else: 
+        userid = json_resquest["userid"]
+        usersCollection = db['users']
+        user = usersCollection.find_one({"_id" : ObjectId(userid)})
+        phone = user["phone"]
+        firstname = user["firstname"]
+        lastname = user["lastname"]
+        email = user["email"]
+        name = firstname + " " + lastname
 
         listingurl = json_resquest["listingurl"]
         listingid = json_resquest["listingid"]
