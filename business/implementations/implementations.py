@@ -101,6 +101,31 @@ class Implementations():
 
         return returnSuccess
 
+    def sendEmailCreateUser(self, name, phone, email, movein, budget, filtersObj):
+        returnSuccess = False
+
+        if name is not phone and email is not None and phone is not None and movein is not None and budget is not None and filtersObj is not None:
+            listingCollection = Listings(self.__db__)
+
+            subject = "New User: " + str(name)
+            body = "User: " + name + "<br> Email: " + email + "<br> Phone: " + phone + "<br> Move-in: " + movein + "<br> Budget: "+budget + "<br> Preferences: "+ filtersObj
+            # get landlord email
+            # # instantiate email sender object
+            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@gotrotter.com', 'trotterisnumber1')
+            ## send email
+            mailSenderObj.sendEmail('concierge@gotrotter.com', 'concierge@gotrotter.com', subject, body)
+            ## email quit sender object
+            mailSenderObj.quit()
+
+            # save hit in the listing option collection
+            # listingOptionCollection = ListingOptions(self.__db__)
+            # listingOptionCollection.saveListingOptionClick(listingid,useremail,"contact")
+
+            ## add ok code to dto
+            returnSuccess = True
+
+        return returnSuccess
+
     def verifyListingAvailability(self, listingid=None, useremail=None):
         returnSuccess = False
 
