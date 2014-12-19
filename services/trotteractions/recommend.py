@@ -33,19 +33,23 @@ recommend_api = Blueprint('recommend_api', __name__)
 def recommend():
     reponse_obj = Base()
     try:
+        print request.form
         request_listing = request.form['listingid']
-        request_user = request.form['userid']
-        request_trotter = request.form['trotterid']
+        request_user = request.form['email']
+        # request_trotter = request.form['trotterid']
 
         listingsCollection = db['listings']
         usersCollection = db['users']
-        trottersCollection = db['trotters']
+        # trottersCollection = db['trotters']
 
-        user = usersCollection.find_one({"_id" : ObjectId(request_user)})
+        user = usersCollection.find_one({"email" : request_user})
         listing = listingsCollection.find_one({"_id" : ObjectId(request_listing)})
-        trotter = listingsCollection.find_one({"_id" : ObjectId(request_trotter)})
+        print user
+        print listing
+        # trotter = listingsCollection.find_one({"_id" : ObjectId(request_trotter)})
 
         listing['recommended'] = 1
+        listing['status'] = 'not verified'
 
         shortlist = user['shortlist']
         shortlist.append(listing)
