@@ -24,6 +24,7 @@ from services.useractions.createuser import create_user_api
 from services.useractions.createUserEmail import create_user_email_api
 from services.useractions.getuserlists import get_user_lists_api
 from services.useractions.validateuser import validate_user_api
+from services.useractions.getearlyaccess import get_early_access_api
 
 #trotter actions
 from services.trotteractions.recommend import recommend_api
@@ -63,7 +64,7 @@ app.register_blueprint(get_listing_api)
 app.register_blueprint(save_preferences_api)
 app.register_blueprint(get_preferences_api)
 app.register_blueprint(concierge_email_api)
-app.register_blueprint(add_video_link_api)
+#app.register_blueprint(add_video_link_api)
 app.register_blueprint(add_document_link_api)
 app.register_blueprint(add_listing_api)
 app.register_blueprint(add_trotter_comment_api)
@@ -75,6 +76,7 @@ app.register_blueprint(create_user_email_api)
 app.register_blueprint(get_user_lists_api)
 app.register_blueprint(validate_user_api)
 app.register_blueprint(delete_applylist_api)
+app.register_blueprint(get_early_access_api)
 
 
 @app.route('/')
