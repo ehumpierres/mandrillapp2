@@ -106,8 +106,6 @@ def deploy_success():
 #     response.headers.add('Access-Control-Allow-Methods', 'POST, OPTIONS, GET')
 #     return response
 
-
-
 if __name__ == '__main__':
     app.debug = True
     # enable to run in cloud9
