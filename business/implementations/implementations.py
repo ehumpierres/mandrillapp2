@@ -76,19 +76,44 @@ class Implementations():
 
         return returnSuccess
 
-    def sendEmailConcierge(self, email, username, userphone, listing_url, listingid):
+    def sendEmailConcierge(self, email, username, userphone, listing_url, listingid, request_type):
         returnSuccess = False
 
-        if email is not None and username is not None and userphone is not None and listing_url is not None and listingid is not None:
+        if email is not None and username is not None and userphone is not None and listing_url is not None and listingid is not None and request_type is not None:
             listingCollection = Listings(self.__db__)
 
             subject = str(username) + " - " + str(listingid)
-            body = "User: " + username + "<br> Email: " + email + "<br> Phone: " + userphone + "<br> Url: <a href=\"" + listing_url + "\">" + listing_url + "</a>"
+            body = "User: " + username + "<br> Email: " + email + "<br> Phone: " + userphone + "<br> Url: <a href=\"" + listing_url + "\">" + listing_url + "</a><br>Request: "+request_type
             # get landlord email
             # # instantiate email sender object
-            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@socrex.com', 'monaco123')
+            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@gotrotter.com', 'trotterisnumber1')
             ## send email
-            mailSenderObj.sendEmail('concierge@socrex.com', 'concierge@socrex.com', subject, body)
+            mailSenderObj.sendEmail('concierge@gotrotter.com', 'concierge@gotrotter.com', subject, body)
+            ## email quit sender object
+            mailSenderObj.quit()
+
+            # save hit in the listing option collection
+            # listingOptionCollection = ListingOptions(self.__db__)
+            # listingOptionCollection.saveListingOptionClick(listingid,useremail,"contact")
+
+            ## add ok code to dto
+            returnSuccess = True
+
+        return returnSuccess
+
+    def sendEmailCreateUser(self, name, phone, email, movein, budget, filtersObj):
+        returnSuccess = False
+
+        if name is not phone and email is not None and phone is not None and movein is not None and budget is not None and filtersObj is not None:
+            listingCollection = Listings(self.__db__)
+
+            subject = "New User: " + str(name)
+            body = "User: " + name + "<br> Email: " + email + "<br> Phone: " + phone + "<br> Move-in: " + movein + "<br> Budget: "+budget + "<br> Preferences: "+ filtersObj
+            # get landlord email
+            # # instantiate email sender object
+            mailSenderObj = MailSender('smtp.gmail.com', 587, 'concierge@gotrotter.com', 'trotterisnumber1')
+            ## send email
+            mailSenderObj.sendEmail('concierge@gotrotter.com', 'concierge@gotrotter.com', subject, body)
             ## email quit sender object
             mailSenderObj.quit()
 
