@@ -35,7 +35,6 @@ from services.trotteractions.adddocumentlink import add_document_link_api
 from services.trotteractions.addtrottercomment import add_trotter_comment_api
 from services.trotteractions.addlisting import add_listing_api
 
-
 #listing actions
 from services.listings.filterlistings import filter_listings_api
 from services.listings.getlisting import get_listing_api
