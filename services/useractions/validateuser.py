@@ -32,6 +32,7 @@ validate_user_api = Blueprint('validate_user_api', __name__)
 @validate_user_api.route('/user/validate/<userauth0id>', methods=['GET'])
 def validate_user(userauth0id= None):
     reponse_obj = Base()
+    print "userauth0id: " , userauth0id
     try:
         if userauth0id is not None:
 
@@ -52,6 +53,7 @@ def validate_user(userauth0id= None):
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
 
+    print "reponse_obj" , reponse_obj
     json_obj = jsonpickle.encode(reponse_obj, unpicklable=False)
     response = Response(json_obj)
     response.headers.add('Access-Control-Allow-Origin', '*')
