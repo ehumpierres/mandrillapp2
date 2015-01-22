@@ -49,7 +49,6 @@ from services.preferences.getpreferences import get_preferences_api
 app = Flask(__name__)
 
 # add blueprint services
-
 app.register_blueprint(add_shortlist_api)
 app.register_blueprint(add_applylist_api)
 app.register_blueprint(add_bulk_shortlist_api)
