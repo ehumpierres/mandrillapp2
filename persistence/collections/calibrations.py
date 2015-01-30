@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 
 class Calibrations():
 
@@ -22,3 +23,14 @@ class Calibrations():
         else:
             return None
         return calibration_element
+
+    def add_test_data(self):
+        # calibrations
+        calibration_value_1 = {'_id': ObjectId('5349b4ddd2781d08c09890c1'), 'city': 'New York City', 'min_budget': 0, 'max_budget': 500, 'bedrooms': 1, 'calibration_value': 0}
+        calibration_value_2 = {'_id': ObjectId('5349b4ddd2781d08c09890c2'), 'city': 'New York City', 'min_budget': 500, 'max_budget': 1000, 'bedrooms': 1, 'calibration_value': 20}
+        calibration_value_3 = {'_id': ObjectId('5349b4ddd2781d08c09890c3'), 'city': 'New York City', 'min_budget': 1000, 'max_budget': 1500, 'bedrooms': 1, 'calibration_value': 50}
+        calibration_value_4 = {'_id': ObjectId('5349b4ddd2781d08c0989043'), 'city': 'New York City', 'min_budget': 1500, 'max_budget': 2000, 'bedrooms': 1, 'calibration_value': 70}
+        self.__collectionObject__.insert(calibration_value_1)
+        self.__collectionObject__.insert(calibration_value_2)
+        self.__collectionObject__.insert(calibration_value_3)
+        self.__collectionObject__.insert(calibration_value_4)

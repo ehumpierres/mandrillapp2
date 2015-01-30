@@ -1,3 +1,5 @@
+import ConfigParser
+
 from persistence.mongodatabase import mongoDatabase
 from pymongo import MongoClient
 
@@ -8,14 +10,24 @@ from business.implementations.pointcalculator import PointCalculator
 from persistence.collections.listings import Listings
 from persistence.collections.listingoptions import ListingOptions
 from persistence.collections.neighborhoods import Neighborhoods
+from persistence.collections.notifications import Notifications
+from persistence.collections.listingowners import ListingOwners
+from persistence.collections.messages import Messages
+from persistence.collections.users import Users
+from persistence.collections.calibrations import Calibrations
 
 
 class Implementations():
     def __init__(self):
 
+         # TODO: improve the way this vars are loaded
         # load constants
-        self.__MONGO_URL__ = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-        self.__MONGO_DB__ = "app30172457"
+        config = ConfigParser.ConfigParser()
+        config.read("config.cfg")
+        mongo_section = 'mongo_config'
+        # load constants
+        self.__MONGO_URL__ = config.get(mongo_section, 'url')
+        self.__MONGO_DB__ = config.get(mongo_section, 'db')
 
         # self.__MONGO_URL__ = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
         # self.__MONGO_DB__ = "app31380057"
@@ -24,6 +36,37 @@ class Implementations():
         # init db connection
         self.__myDB__ = mongoDatabase(self.__MONGO_URL__)
         self.__db__ = self.__myDB__.getDB(self.__MONGO_DB__)
+
+    def get_unread_notifications(self, user_id):
+        notifications_collection_obj = Notifications(self.__db__)
+        return notifications_collection_obj.get_unread_notifications(user_id)
+
+    def load_notifications_test_data(self):
+        notifications_collection_obj = Notifications(self.__db__)
+        notifications_collection_obj.add_test_data()
+
+    def load_all_database_test_data(self):
+        self.load_users_test_data()
+        self.load_listing_owners_test_data()
+        self.load_messages_test_data()
+        self.load_notifications_test_data()
+
+    def load_users_test_data(self):
+        users_collection_obj = Users(self.__db__)
+        users_collection_obj.add_test_data()
+
+    def load_listing_owners_test_data(self):
+         ## get calibration value
+        listing_owners_collection_obj = ListingOwners(self.__db__)
+        listing_owners_collection_obj.add_test_data()
+
+    def load_messages_test_data(self):
+        messages_collection_obj = Messages(self.__db__)
+        messages_collection_obj.add_test_data()
+
+    def load_calibrations_test_data(self):
+        calibrations_collection_obj = Calibrations(self.__db__)
+        calibrations_collection_obj.add_test_data()
 
     def update_neighborhood_info(self, listing_id=None, neighborhoods_coords=None):
         return_success = False

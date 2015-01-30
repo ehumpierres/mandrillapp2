@@ -1,3 +1,4 @@
+from bson.objectid import ObjectId
 
 class ListingOwners():
 
@@ -14,3 +15,23 @@ class ListingOwners():
         listing_owners_cursors = self.__collectionObject__.find()
         listing_owners_list = list(listing_owners_cursors)
         return listing_owners_list
+
+    # returns a particular listing owner
+    def gell_listing_owner(self, listing_owner_id):
+        filter_object = {'_id': ObjectId(listing_owner_id)}
+        fields_object = {'_id': 0}
+        listing_owners_cursors = self.__collectionObject__.find(filter_object,fields_object)
+        listing_owners_list = list(listing_owners_cursors)
+        print "listing_owners_list"
+        print listing_owners_list
+        return listing_owners_list
+
+    def add_test_data(self):
+        # from user to listing owners
+        listing_owner_1 = {'_id': ObjectId('5349b4ddd2781d08c09890f1'), 'fullname': 'Gerald K. Ramey'   , 'email': 'GeraldKRamey@rhyta.com'     , 'phone': '717-892-5401'}
+        listing_owner_2 = {'_id': ObjectId('5349b4ddd2781d08c09890f2'), 'fullname': 'Sarah J. Sanderson', 'email': 'SarahJSanderson@teleworm.us', 'phone': '850-267-6795'}
+        listing_owner_3 = {'_id': ObjectId('5349b4ddd2781d08c09890f3'), 'fullname': 'Denise J. Mitchell', 'email': 'DeniseJMitchell@teleworm.us', 'phone': '218-728-9878'}
+        self.__collectionObject__.insert(listing_owner_1)
+        self.__collectionObject__.insert(listing_owner_2)
+        self.__collectionObject__.insert(listing_owner_3)
+

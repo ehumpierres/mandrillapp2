@@ -21,6 +21,8 @@ from flask import Blueprint
 
 # json handling
 import jsonpickle
+import ConfigParser
+
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 
@@ -56,6 +58,17 @@ myDB = mongoDatabase(MONGO_URL)
 db = myDB.getDB(MONGO_DB)
 
 save_preferences_api = Blueprint('save_preferences_api', __name__)
+
+@save_preferences_api.route('/calibrations/test', methods=['POST'])
+def create_calibration_test():
+    try:
+        test_instance = TestData()
+        test_instance.load_calibrations_test_data()
+        return Response()
+    except Exception as e:
+        print "There was an unexpected error: " , str(e)
+        print traceback.format_exc()
+        abort(500)
 
 @save_preferences_api.route('/calibrations', methods=['POST'])
 def calculate_calibration():

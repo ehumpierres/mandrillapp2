@@ -18,6 +18,8 @@ from flask import Blueprint
 
 # json handling
 import jsonpickle
+import ConfigParser
+
 from bson.json_util import dumps
 from bson.objectid import ObjectId
 
@@ -29,11 +31,13 @@ from dto.response.classes.listinglist import ListingList
 from persistence.mongodatabase import mongoDatabase
 
 
+# TODO: improve the way this vars are loaded
 # load constants
-# MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
-# MONGO_DB = "app31803464"
-MONGO_URL = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-MONGO_DB = "app30172457"
+config = ConfigParser.ConfigParser()
+config.read("config.cfg")
+mongo_section = 'mongo_config'
+MONGO_URL = config.get(mongo_section, 'url')
+MONGO_DB = config.get(mongo_section, 'db')
 
 # init db connection
 myDB = mongoDatabase(MONGO_URL)
