@@ -75,7 +75,7 @@ class Implementations():
 
         # get listing owners from database
         listing_owners_collection_obj = ListingOwners(self.__db__)
-        retrieved_listing_owners = listing_owners_collection_obj.gell_all_listing_owners_phone_numbers()
+        retrieved_listing_owners = listing_owners_collection_obj.gell_all_listing_owners()
 
         print "retrieved_listing_owners"
         print retrieved_listing_owners
