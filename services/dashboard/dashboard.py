@@ -143,26 +143,14 @@ def save_received_user_mandrill_email():
     #print "json__request_obj"
     #print json__request_obj
     mandrill_events = request.form.get('mandrill_events')
-    print "mandrill_events"
-    print mandrill_events
-    print "type(mandrill_events)"
-    print type(mandrill_events)
-    print "jsonpickle.decode(mandrill_events)"
-    print jsonpickle.decode(mandrill_events)
-    print "type(jsonpickle.decode(mandrill_events))"
-    print type(jsonpickle.decode(mandrill_events))
-    print "jsonpickle.decode(mandrill_events)[0]"
-    print jsonpickle.decode(mandrill_events)[0]
-    print "type(jsonpickle.decode(mandrill_events)[0])"
-    print type(jsonpickle.decode(mandrill_events)[0])
-    print "jsonpickle.decode(mandrill_events)[0]['msg']"
-    print jsonpickle.decode(mandrill_events)[0]['msg']
-    print "type(jsonpickle.decode(mandrill_events)[0]['msg'])"
-    print type(jsonpickle.decode(mandrill_events)[0]['msg'])
-    print "jsonpickle.decode(mandrill_events)[0]['msg']['text']"
-    print jsonpickle.decode(mandrill_events)[0]['msg']['text']
-    print "type(jsonpickle.decode(mandrill_events)[0]['msg']['text'])"
-    print type(jsonpickle.decode(mandrill_events)[0]['msg']['text'])
+    mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
+    mandrill_message_text = mandrill_message['text']
+    mandrill_message_from_name = mandrill_message['from_name']
+    print "mandrill_message_text"
+    print mandrill_message_text
+    print "mandrill_message_from_name"
+    print mandrill_message_from_name
+
     return Response()
     """
     try:
