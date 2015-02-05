@@ -138,7 +138,10 @@ def get_unread_notifications(user_id = None):
 
 @dashboard_api.route('/mandrillreplies', methods=['POST'])
 def save_received_user_mandrill_email():
+    json__request_obj = jsonpickle.encode(request, unpicklable=False)
     print "save_received_user_mandrill_email"
+    print "json__request_obj"
+    print json__request_obj
     return Response()
     """
     try:
