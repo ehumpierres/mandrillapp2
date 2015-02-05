@@ -13,8 +13,8 @@ class Messages():
 
     # TODO: save this data in a normalized way using listing owner ids instead the phone number
     # save message
-    def save_message(self, from_type, listing_owner_phone_number, user_id, content, is_broadcast, sid, twilio_conversation_id, from_channel):
-        insert_object = {'fromType': from_type, 'listing_owner_phone_number': listing_owner_phone_number , 'user_id':user_id, 'content': content, 'is_broadcast': is_broadcast, 'twilio_sid': sid , 'twilio_conversation_id':twilio_conversation_id, 'from_channel':from_channel}
+    def save_message(self, from_type, listing_owner_phone_number, user_number, user_id, content, is_broadcast, sid, twilio_conversation_id, from_channel):
+        insert_object = {'fromType': from_type, 'listing_owner_phone_number': listing_owner_phone_number , 'user_number':user_number , 'user_id':user_id, 'content': content, 'is_broadcast': is_broadcast, 'twilio_sid': sid , 'twilio_conversation_id':twilio_conversation_id, 'from_channel':from_channel}
         self.__insert_message__(insert_object)
 
     def save_email(self, from_type, user_email, user_id, content):

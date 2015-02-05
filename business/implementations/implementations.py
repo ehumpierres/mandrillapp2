@@ -144,15 +144,15 @@ class Implementations():
 
     def save_realtor_twilio_message(self, sid, from_number, to_number, body):
 
-        #save sent message in the db
-        messages_collection_obj = Messages(self.__db__)
-        messages_collection_obj.save_message('listing_owner', from_number, to_number, body, False, sid, False)
-
         # get conversation
         conversation_collection_obj = TwilioConvertations(self.__db__)
         conversation_obj = conversation_collection_obj.get_conversation_by_phone(to_number, from_number)
-
+        conversation_obj_id = conversation_obj['_id']
         user_id = conversation_obj['user_id']
+
+        #save sent message in the db
+        messages_collection_obj = Messages(self.__db__)
+        messages_collection_obj.save_message('listing_owner', from_number, to_number, user_id, body, False, sid, conversation_obj_id, 'SMS')
 
         # get info from user
         users_collection_obj = Users(self.__db__)
