@@ -15,13 +15,16 @@ class TwilioNumbers():
         twilio_number_obj = self.__collectionObject__.find_one({'status': 'available'})
         print "twilio_number_obj"
         print twilio_number_obj
+        ## TODO: handle creating numbers
         if twilio_number_obj is not None:
             twilio_number_obj['status'] = 'busy'
             twilio_number = twilio_number_obj['number']
             print "twilio_number"
             print twilio_number
             self.__collectionObject__.update({'_id': twilio_number_obj['_id']}, twilio_number_obj, True)
-        return twilio_number
+            return twilio_number
+        else:
+            return None
 
     def add_test_data(self):
         # sample data
