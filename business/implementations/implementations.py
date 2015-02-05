@@ -96,7 +96,7 @@ class Implementations():
 
         #save sent message in the db
         messages_collection_obj = Messages(self.__db__)
-        messages_collection_obj.save_message('listing_owner', from_number, to_number, body, False, sid)
+        messages_collection_obj.save_message('listing_owner', from_number, to_number, body, False, sid, False)
 
         # get info from user
         users_collection_obj = Users(self.__db__)
