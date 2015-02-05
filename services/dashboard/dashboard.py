@@ -149,6 +149,12 @@ def save_received_user_mandrill_email():
     print type(mandrill_events)
     print "jsonpickle.decode(mandrill_events)"
     print jsonpickle.decode(mandrill_events)
+    print "type(jsonpickle.decode(mandrill_events))"
+    print type(jsonpickle.decode(mandrill_events))
+    print "jsonpickle.decode(mandrill_events)[0]"
+    print jsonpickle.decode(mandrill_events)[0]
+    print "type(jsonpickle.decode(mandrill_events))[0]"
+    print type(jsonpickle.decode(mandrill_events))[0]
     return Response()
     """
     try:
