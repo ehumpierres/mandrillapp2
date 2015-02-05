@@ -96,7 +96,7 @@ class Implementations():
 
             #save sent message in the db
             messages_collection_obj = Messages(self.__db__)
-            messages_collection_obj.save_message('user', retrieved_listing_owners_phone_number, user_id, message, True, None, twilio_conversation_id, 'SMS')
+            messages_collection_obj.save_message('user', retrieved_listing_owners_phone_number, None , user_id, message, True, None, twilio_conversation_id, 'SMS')
 
         return True
 
