@@ -107,9 +107,8 @@ class Implementations():
         # get info from user
         users_collection_obj = Users(self.__db__)
         users_obj = users_collection_obj.get_user_by_id(user_id)
-        user_name = users_obj.fullname
-        user_email = users_obj.email
-
+        user_name = users_obj['fullname']
+        user_email = users_obj['email']
 
         # sent email to user telling that have received a new message from realtor
         mandrill_instance = MandrillUtils()
