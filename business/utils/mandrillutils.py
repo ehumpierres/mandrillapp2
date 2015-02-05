@@ -29,7 +29,7 @@ class MandrillUtils():
     def send_received_message_notification_template_to_user(self, user_name, user_email, message_content, message_url):
         template_name = self.__received_message_notification_template_name__
         subject = self.__received_message_notification_template_subject__
-        sender_email = 'reply@.inbound.gotrotter.com'
+        sender_email = 'reply@inbound.gotrotter.com'
         sender_name = 'Trotter'
         template_user_merge_vars = [
             {"name": "USER_NAME", "content": user_name},
