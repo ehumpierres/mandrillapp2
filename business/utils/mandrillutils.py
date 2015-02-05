@@ -47,7 +47,7 @@ class MandrillUtils():
         template_user_merge_vars = [
             {"name": "USER_NAME", "content": user_name}
         ]
-        self.__send_template__(template_name, sender_email, sender_name user_email, user_name, subject,  template_user_merge_vars)
+        self.__send_template__(template_name, sender_email, sender_name, user_email, user_name, subject,  template_user_merge_vars)
 
     # send early access notification email to trotter using mandrill template
     def send_early_access_notification_template_to_trotter(self, fullname, email, phone):
