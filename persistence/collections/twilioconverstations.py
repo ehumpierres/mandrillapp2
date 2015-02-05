@@ -17,10 +17,10 @@ class TwilioConvertations():
 
      # return user
     def get_conversation_by_phone(self, twilio_number, listing_owner_number):
-        print "from_number"
-        print from_number
-        print 'to_number'
-        print to_number
+        print "twilio_number"
+        print twilio_number
+        print 'listing_owner_number'
+        print listing_owner_number
         conversation_object = self.__collectionObject__.find_one({'twilio_number': twilio_number, 'status': "active", 'listing_owner_number': listing_owner_number})
         print "conversation_object"
         print conversation_object
