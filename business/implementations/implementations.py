@@ -66,6 +66,12 @@ class Implementations():
         print "twilio_number"
         print twilio_number
 
+        twilio_utils_instance = TwilioUtils()
+        # buy a new number from twilio
+        if twilio_number is None:
+            twilio_number = twilio_utils_instance.search_and_buy_number()
+
+
         # get listing owners from database
         listing_owners_collection_obj = ListingOwners(self.__db__)
         retrieved_listing_owners_phone_numbers = listing_owners_collection_obj.gell_all_listing_owners_phone_numbers()
@@ -83,8 +89,7 @@ class Implementations():
             # builds message to be sent to the realtors
             message = "I'm looking for an apartment. Budget: " + str(budget) + ", bedrooms: " + str(bedrooms) + ", city: " + city
             # send broadcast using twilio
-            twilio_instance = TwilioUtils()
-            twilio_instance.send_message_to_number(message, twilio_number, retrieved_listing_owners_phone_number)
+            twilio_utils_instance.send_message_to_number(message, twilio_number, retrieved_listing_owners_phone_number)
 
             #save sent message in the db
             messages_collection_obj = Messages(self.__db__)

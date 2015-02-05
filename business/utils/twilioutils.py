@@ -25,6 +25,18 @@ class TwilioUtils():
         for phone_number in phone_numbers_list:
             self.send_message_to_number(from_number, message, phone_number)
 
+    def search_and_buy_number(self):
+        numbers = self.__client__.phone_numbers.search()
+        if numbers:
+            number = numbers[0]
+            number.purchase()
+            print "number"
+            print number
+            return number
+        else:
+            print "there were no numbers available to buy"
+            return None
+
     def send_message_to_number(self, message, from_number , to_number):
         try:
             #sends the sms using the twilio client
