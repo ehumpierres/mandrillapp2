@@ -153,8 +153,16 @@ def save_received_user_mandrill_email():
     print type(jsonpickle.decode(mandrill_events))
     print "jsonpickle.decode(mandrill_events)[0]"
     print jsonpickle.decode(mandrill_events)[0]
-    print "type(jsonpickle.decode(mandrill_events))[0]"
-    print type(jsonpickle.decode(mandrill_events))[0]
+    print "type(jsonpickle.decode(mandrill_events)[0])"
+    print type(jsonpickle.decode(mandrill_events)[0])
+    print "jsonpickle.decode(mandrill_events)[0]['msg']"
+    print jsonpickle.decode(mandrill_events)[0]['msg']
+    print "type(jsonpickle.decode(mandrill_events)[0]['msg'])"
+    print type(jsonpickle.decode(mandrill_events)[0]['msg'])
+    print "jsonpickle.decode(mandrill_events)[0]['msg']['text']"
+    print jsonpickle.decode(mandrill_events)[0]['msg']['text']
+    print "type(jsonpickle.decode(mandrill_events)[0]['msg']['text'])"
+    print type(jsonpickle.decode(mandrill_events)[0]['msg']['text'])
     return Response()
     """
     try:
