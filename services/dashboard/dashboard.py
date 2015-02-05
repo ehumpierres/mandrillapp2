@@ -142,10 +142,13 @@ def save_received_user_mandrill_email():
     print "save_received_user_mandrill_email"
     #print "json__request_obj"
     #print json__request_obj
-    print "request.form.get('mandrill_events')"
-    print request.form.get('mandrill_events')
-    print "type(request.form.get('mandrill_events'))"
-    print type(request.form.get('mandrill_events'))
+    mandrill_events = request.form.get('mandrill_events')
+    print "mandrill_events"
+    print mandrill_events
+    print "type(mandrill_events)"
+    print type(mandrill_events)
+    print "jsonpickle.decode(mandrill_events)"
+    print jsonpickle.decode(mandrill_events)
     return Response()
     """
     try:
