@@ -136,10 +136,10 @@ def get_unread_notifications(user_id = None):
         print traceback.format_exc()
         abort(500)
 
-@dashboard_api.route('/realtor/twiliomessages', methods=['POST'])
+@dashboard_api.route('/twiliomessages', methods=['POST'])
 def save_received_realtor_twilio_messages():
     try:
-
+        print "save_received_realtor_twilio_messages"
         request_form_sid = request.form.get('MessageSid') # Twilio's unique identifier of the message
         request_form_from = request.form.get('From')      # number that sent us the sms
         request_form_to = request.form.get('To')          # Twilio number we used to receive the sms

@@ -85,6 +85,7 @@ app.register_blueprint(dashboard_api)
 
 @app.route('/')
 def deploy_success():
+    print "This application has deployed successfully"
     return 'This application has deployed successfully.'
 
 
