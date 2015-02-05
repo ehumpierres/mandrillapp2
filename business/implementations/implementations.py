@@ -7,6 +7,7 @@ from pymongo import MongoClient
 from business.utils.mailsender import MailSender
 from business.utils.twilioutils import TwilioUtils
 from business.utils.mandrillutils import MandrillUtils
+from business.utils.stringutils import StringUtils
 
 from business.implementations.pointcalculator import PointCalculator
 
@@ -74,15 +75,17 @@ class Implementations():
 
         # get listing owners from database
         listing_owners_collection_obj = ListingOwners(self.__db__)
-        retrieved_listing_owners_phone_numbers = listing_owners_collection_obj.gell_all_listing_owners_phone_numbers()
+        retrieved_listing_owners = listing_owners_collection_obj.gell_all_listing_owners_phone_numbers()
 
-        print "retrieved_listing_owners_phone_numbers"
-        print retrieved_listing_owners_phone_numbers
+        print "retrieved_listing_owners"
+        print retrieved_listing_owners
 
-        for retrieved_listing_owners_phone_number in retrieved_listing_owners_phone_numbers:
+        for retrieved_listing_owner in retrieved_listing_owners:
+            retrieved_listing_owners_id = retrieved_listing_owner['_id']
+            retrieved_listing_owners_phone_number = retrieved_listing_owner['phone']
             # get random free twilio number
             twilio_conversations_instance = TwilioConvertations(self.__db__)
-            twilio_conversation_id = twilio_conversations_instance.add_conversation(twilio_number, retrieved_listing_owners_phone_number, user_id)
+            twilio_conversation_id = twilio_conversations_instance.add_conversation(twilio_number, retrieved_listing_owners_phone_number, user_id, retrieved_listing_owners_id)
             print "twilio_conversation_id"
             print twilio_conversation_id
 
@@ -93,7 +96,49 @@ class Implementations():
 
             #save sent message in the db
             messages_collection_obj = Messages(self.__db__)
-            messages_collection_obj.save_message('user', retrieved_listing_owners_phone_numbers, user_id, message, True, None, twilio_conversation_id)
+            messages_collection_obj.save_message('user', retrieved_listing_owners_phone_number, user_id, message, True, None, twilio_conversation_id, 'SMS')
+
+        return True
+
+    def save_received_user_mandrill_email(self, email_content, from_email):
+
+        ################
+        ## save email ##
+        ################
+
+        # get info from user
+        users_collection_obj = Users(self.__db__)
+        user_id = users_collection_obj.get_user_id_by_email(from_email)
+
+        # clean line brakes from text
+        cleaned_text = StringUtils.clear_line_breaks(email_content)
+
+        # add messages in database
+        messages_collection_obj = Messages(self.__db__)
+        messages_collection_obj.save_email('user', from_email, user_id, cleaned_text)
+
+
+        #############################
+        ## send message to realtor ##
+        #############################
+
+        # get recipient listing owner from database
+        listing_owners_collection_obj = ListingOwners(self.__db__)
+        listing_owners_obj = listing_owners_collection_obj.gell_all_listing_owners_phone_numbers()
+        listing_owners_obj_id = listing_owners_obj['_id']
+        listing_owners_obj_phone = listing_owners_obj['phone']
+
+        twilio_conversations_instance = TwilioConvertations(self.__db__)
+        twilio_conversation = twilio_conversations_instance.get_conversation_by_user_and_listing_owner_ids(user_id, listing_owners_obj_id)
+
+        twilio_conversation_id = twilio_conversation['_id']
+
+        # save message in database
+        messages_collection_obj.save_message('user', listing_owners_obj_phone, user_id, cleaned_text, False, None, twilio_conversation_id , 'SMS')
+
+        # send message using twilio
+        twilio_utils_instance = TwilioUtils()
+        twilio_utils_instance.send_message_to_number(cleaned_text, listing_owners_obj_phone, listing_owners_obj_phone)
 
         return True
 

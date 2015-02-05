@@ -19,12 +19,18 @@ class ListingOwners():
         final_phone_list = [x['phone'] for x in listing_owners_phone_numbers_list if 'phone' in x]
         return final_phone_list
 
-    # returns listings owners list
+    # returns listings owners numbers list
     def gell_all_listing_owners_phone_numbers(self):
         listing_owners_phone_numbers_cursors = self.__collectionObject__.find({}, {'phone': 1, '_id': 0})
         listing_owners_phone_numbers_list = list(listing_owners_phone_numbers_cursors)
         final_phone_list = [x['phone'] for x in listing_owners_phone_numbers_list if 'phone' in x]
         return final_phone_list
+
+    # returns listings owners list
+    def gell_all_listing_owners(self):
+        listing_owners_phone_numbers_cursors = self.__collectionObject__.find({}, {'phone': 1, '_id': 1})
+        listing_owners_phone_numbers_list = list(listing_owners_phone_numbers_cursors)
+        return listing_owners_phone_numbers_list
 
     # returns a particular listing owner
     def gell_listing_owner(self, listing_owner_id):

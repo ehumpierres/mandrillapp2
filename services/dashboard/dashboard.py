@@ -138,40 +138,29 @@ def get_unread_notifications(user_id = None):
 
 @dashboard_api.route('/mandrillreplies', methods=['POST'])
 def save_received_user_mandrill_email():
-    #json__request_obj = jsonpickle.encode(request, unpicklable=False)
-    print "save_received_user_mandrill_email"
-    #print "json__request_obj"
-    #print json__request_obj
-    mandrill_events = request.form.get('mandrill_events')
-    mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
-    mandrill_message_text = mandrill_message['text']
-    mandrill_message_from_name = mandrill_message['from_name']
-    print "mandrill_message_text"
-    print mandrill_message_text
-    print "mandrill_message_from_name"
-    print mandrill_message_from_name
-
-    return Response()
-    """
     try:
+        print "save_received_user_mandrill_email"
+        mandrill_events = request.form.get('mandrill_events')
+        mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
+        mandrill_message_text = mandrill_message['text']
+        mandrill_message_from_email = mandrill_message['from_email']
 
-        request_form_sid = request.form.get('MessageSid') # Twilio's unique identifier of the message
-        request_form_from = request.form.get('From')      # number that sent us the sms
-        request_form_to = request.form.get('To')          # Twilio number we used to receive the sms
-        request_form_body = request.form.get('Body')      # Content of the sms
+        print "mandrill_message_text"
+        print mandrill_message_text
+        print "mandrill_message_from_email"
+        print mandrill_message_from_email
 
-        if (request_form_sid is not None) and (request_form_from is not None) and (request_form_to is not None) and (request_form_body is not None):
+        if (mandrill_message_text is not None) and (mandrill_message_from_email is not None):
             implementations_instance = Implementations()
-            implementations_instance.save_realtor_twilio_message(request_form_sid, request_form_from, request_form_to, request_form_body)
-            json_obj = jsonpickle.encode([], unpicklable=False)
-            return Response(json_obj)
+            implementations_instance.save_received_user_mandrill_email(mandrill_message_text, mandrill_message_from_email)
+            return Response()
         else:
             abort(500)
     except Exception as e:
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
         abort(500)
-        """
+
 
 @dashboard_api.route('/twiliomessages', methods=['POST'])
 def save_received_realtor_twilio_messages():

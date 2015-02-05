@@ -20,6 +20,17 @@ class Users():
         return user_object
 
     # return user
+    def get_user_id_by_email(self, email):
+        print "email"
+        print email
+        user_object = self.__collectionObject__.find_one({'email': email})
+        print "user_object"
+        print user_object
+        print "user_object['email']"
+        print user_object['_id']
+        return user_object['_id']
+
+    # return user
     def get_user_by_id(self, user_id):
         print "user_id"
         print user_id
