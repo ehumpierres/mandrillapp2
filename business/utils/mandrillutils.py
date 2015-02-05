@@ -22,10 +22,6 @@ class MandrillUtils():
         self.__trotter_notification_early_access_template_subject__ = config.get(mandrill_section, 'trotter_notification_early_access_template_subject')
         self.__received_message_notification_template_name__ = config.get(mandrill_section, 'received_message_notification_template_name')
         self.__received_message_notification_template_subject__ = config.get(mandrill_section, 'received_message_notification_template_subject')
-
-
-
-
         print "api key"
         print self.__api_key__
 
@@ -33,21 +29,25 @@ class MandrillUtils():
     def send_received_message_notification_template_to_user(self, user_name, user_email, message_content, message_url):
         template_name = self.__received_message_notification_template_name__
         subject = self.__received_message_notification_template_subject__
+        sender_email = 'reply@.inbound.gotrotter.com'
+        sender_name = 'Trotter'
         template_user_merge_vars = [
             {"name": "USER_NAME", "content": user_name},
             {"name": "MESSAGE_CONTENT", "content": message_content},
             {"name": "MESSAGE_URL", "content": message_url}
         ]
-        self.__send_template__(template_name, user_email, user_name, subject,  template_user_merge_vars)
+        self.__send_template__(template_name, sender_email, sender_name, user_email, user_name, subject,  template_user_merge_vars)
 
     # send early access email to user using mandrill template
     def send_early_access_template_to_user(self, user_name, user_email):
         template_name = self.__user_early_access_template_name__
         subject = self.__user_early_access_template_subject__
+        sender_email = 'no-reply@gotrotter.com'
+        sender_name = 'Trotter'
         template_user_merge_vars = [
             {"name": "USER_NAME", "content": user_name}
         ]
-        self.__send_template__(template_name, user_email, user_name, subject,  template_user_merge_vars)
+        self.__send_template__(template_name, sender_email, sender_name user_email, user_name, subject,  template_user_merge_vars)
 
     # send early access notification email to trotter using mandrill template
     def send_early_access_notification_template_to_trotter(self, fullname, email, phone):
@@ -55,23 +55,25 @@ class MandrillUtils():
         recipient_email = self.__trotter_notification_recipient_email__
         recipient_name = self.__trotter_notification_recipient_name__
         subject = self.__trotter_notification_early_access_template_subject__
+        sender_email = 'no-reply@gotrotter.com'
+        sender_name = 'Trotter'
         template_user_merge_vars = [
             {"name": "USER_NAME", "content": fullname},
             {"name": "EMAIL", "content": email},
             {"name": "PHONE", "content": phone},
             {"name": "TROTTER_ADMIN", "content": recipient_name}
         ]
-        self.__send_template__(template_name, recipient_email, recipient_name, subject, template_user_merge_vars)
+        self.__send_template__(template_name, sender_email , sender_name, recipient_email, recipient_name, subject, template_user_merge_vars)
 
     # send email using mandrill template
-    def __send_template__(self, template_name, recipient_email, recipient_name, subject, template_user_merge_vars):
+    def __send_template__(self, template_name, sender_email , sender_name, recipient_email, recipient_name, subject, template_user_merge_vars):
         try:
 
             # TODO: what is template_content for?
             template_content = [{}]
             message = {
-                'from_email': 'no-reply@gotrotter.com',
-                'from_name': 'Trotter',
+                'from_email': sender_email,
+                'from_name': sender_name,
                 "merge_vars": [
                     {
                         "rcpt": recipient_email,
