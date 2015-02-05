@@ -19,6 +19,15 @@ class Users():
         print user_object
         return user_object
 
+    # return user
+    def get_user_by_id(self, user_id):
+        print "user_id"
+        print user_id
+        user_object = self.__collectionObject__.find_one({'_id': user_id})
+        print "user_object"
+        print user_object
+        return user_object
+
     # return user_id
     def save_user(self, user_obj):
         return self.__collectionObject__.insert(user_obj)

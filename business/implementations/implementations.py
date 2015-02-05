@@ -76,7 +76,7 @@ class Implementations():
         for retrieved_listing_owners_phone_number in retrieved_listing_owners_phone_numbers:
             # get random free twilio number
             twilio_conversations_instance = TwilioConvertations(self.__db__)
-            twilio_conversation_id = twilio_conversations_instance.add_conversation(twilio_number, retrieved_listing_owners_phone_number)
+            twilio_conversation_id = twilio_conversations_instance.add_conversation(twilio_number, retrieved_listing_owners_phone_number, user_id)
             print "twilio_conversation_id"
             print twilio_conversation_id
 
@@ -98,9 +98,15 @@ class Implementations():
         messages_collection_obj = Messages(self.__db__)
         messages_collection_obj.save_message('listing_owner', from_number, to_number, body, False, sid, False)
 
+        # get conversation
+        conversation_collection_obj = TwilioConvertations(self.__db__)
+        conversation_obj = conversation_collection_obj.get_conversation_by_phone(to_number, from_number)
+
+        user_id = conversation_obj['user_id']
+
         # get info from user
         users_collection_obj = Users(self.__db__)
-        users_obj = users_collection_obj.get_user_by_phone(to_number)
+        users_obj = users_collection_obj.get_user_by_id(user_id)
         user_name = users_obj.fullname
         user_email = users_obj.email
 
