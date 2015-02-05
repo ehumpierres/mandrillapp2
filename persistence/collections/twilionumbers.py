@@ -13,11 +13,14 @@ class TwilioNumbers():
 
     def get_random_available_number_and_mark_as_unavailable(self):
         twilio_number_obj = self.__collectionObject__.find_one({'status': 'available'})
-        twilio_number_obj['status'] = 'busy'
-        twilio_number = twilio_number_obj['number']
-        print "twilio_number"
-        print twilio_number
-        self.__collectionObject__.update({'_id': twilio_number_obj['_id']}, twilio_number_obj, True)
+        print "twilio_number_obj"
+        print twilio_number_obj
+        if twilio_number_obj is not None:
+            twilio_number_obj['status'] = 'busy'
+            twilio_number = twilio_number_obj['number']
+            print "twilio_number"
+            print twilio_number
+            self.__collectionObject__.update({'_id': twilio_number_obj['_id']}, twilio_number_obj, True)
         return twilio_number
 
     def add_test_data(self):
