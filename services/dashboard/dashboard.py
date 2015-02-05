@@ -142,6 +142,8 @@ def save_received_user_mandrill_email():
     print "save_received_user_mandrill_email"
     #print "json__request_obj"
     #print json__request_obj
+    print "request.form"
+    print request.form
     return Response()
     """
     try:
