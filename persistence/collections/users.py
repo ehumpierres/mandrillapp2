@@ -10,6 +10,10 @@ class Users():
     def __loadConnection(self):
         self.__collectionObject__ = self.__db__[self.__collectionName__]
 
+    # return user
+    def get_user_by_phone(self, phone):
+        return self.__collectionObject__.find({'phone': phone}, {})
+
     # return user_id
     def save_user(self, user_obj):
         return self.__collectionObject__.insert(user_obj)

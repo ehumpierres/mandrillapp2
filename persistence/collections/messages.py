@@ -11,6 +11,16 @@ class Messages():
     def __loadConnection(self):
         self.__collectionObject__ = self.__db__[self.__collectionName__]
 
+    # TODO: save this data in a normalized way using listing owner ids instead the phone number
+    # save message
+    def save_message(self, from_type, listing_owner_phone_number, user_id, content, is_broadcast, sid, twilio_conversation_id):
+        insert_object = {'fromType': from_type, 'listing_owner_phone_number': listing_owner_phone_number , 'user_id':user_id, 'content': content, 'is_broadcast': is_broadcast, 'twilio_sid': sid , 'twilio_conversation_id':twilio_conversation_id}
+        self.__collectionObject__.insert(insert_object)
+
+    def save_messages(self, from_type, listing_owner_phone_number_list, user_id, content, is_broadcast):
+        for listing_owner_phone_number in listing_owner_phone_number_list:
+            self.save_message(from_type, listing_owner_phone_number, user_id, content, is_broadcast)
+
     # return messages
     def get_received_messages(self, user_id):
         print "user_id"

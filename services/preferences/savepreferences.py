@@ -38,6 +38,8 @@ from persistence.collections.preferences import Preferences
 from persistence.collections.listingowners import ListingOwners
 from persistence.collections.calibrations import Calibrations
 
+from business.implementations.implementations import Implementations
+
 
 # load constants
 # MONGO_URL = 'mongodb://jhon:1234@dogen.mongohq.com:10080/app31803464'
@@ -62,8 +64,8 @@ save_preferences_api = Blueprint('save_preferences_api', __name__)
 @save_preferences_api.route('/calibrations/test', methods=['POST'])
 def create_calibration_test():
     try:
-        test_instance = TestData()
-        test_instance.load_calibrations_test_data()
+        implementation_instance = Implementations()
+        implementation_instance.load_calibrations_test_data()
         return Response()
     except Exception as e:
         print "There was an unexpected error: " , str(e)
@@ -98,34 +100,12 @@ def save_preferences():
         fullname = request.form['fullname']
         email = request.form['email']
         phone = request.form['phone']
-        budget = request.form['budget']
-        bedrooms = request.form['bedrooms']
+        budget = int(request.form['budget'])
+        bedrooms = int(request.form['bedrooms'])
         city = request.form['city']
 
-        # build user object to be stored in the database
-        user_object = {'fullname': fullname, 'email': email, 'phone': phone}
-
-        ## save user in the database
-        user_collection_obj = Users(db)
-        user_id = user_collection_obj.save_user(user_object)
-
-        # build preference object to be stored in the database
-        preference_object = {'user_id': user_id, 'budget': budget, 'bedrooms': bedrooms, 'city': city}
-
-        ## save preference in the database
-        preference_collection_obj = Preferences(db)
-        preference_collection_obj.save_preference(preference_object)
-
-        # get listing owners from database
-        listing_owners_collection_obj = ListingOwners(db)
-        retrieved_listing_owners = listing_owners_collection_obj.gell_all_listing_owners()
-
-        print retrieved_listing_owners
-
-        ## TODO: send broadcast to twilio
-        twilio_instance = TwilioUtils()
-        twilio_instance.send_broadcast_to_listing_owners()
-
+        implementation_instance = Implementations()
+        implementation_instance.save_preferences(fullname, email, phone, budget, bedrooms, city)
         return Response()
     except Exception as e:
         print "There was an unexpected error: " , str(e)

@@ -136,6 +136,27 @@ def get_unread_notifications(user_id = None):
         print traceback.format_exc()
         abort(500)
 
+@dashboard_api.route('/realtor/twiliomessages', methods=['POST'])
+def save_received_realtor_twilio_messages():
+    try:
+
+        request_form_sid = request.form.get('MessageSid') # Twilio's unique identifier of the message
+        request_form_from = request.form.get('From')      # number that sent us the sms
+        request_form_to = request.form.get('To')          # Twilio number we used to receive the sms
+        request_form_body = request.form.get('Body')      # Content of the sms
+
+        if (request_form_sid is not None) and (request_form_from is not None) and (request_form_to is not None) and (request_form_body is not None):
+            implementations_instance = Implementations()
+            implementations_instance.save_realtor_twilio_message(request_form_sid, request_form_from, request_form_to, request_form_body)
+            json_obj = jsonpickle.encode([], unpicklable=False)
+            return Response(json_obj)
+        else:
+            abort(500)
+    except Exception as e:
+        print "There was an unexpected error: ", str(e)
+        print traceback.format_exc()
+        abort(500)
+
 @dashboard_api.route('/messages/user/<user_id>', methods=['GET'])
 def get_received_messages(user_id = None):
     try:
