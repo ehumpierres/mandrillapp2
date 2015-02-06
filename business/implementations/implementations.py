@@ -122,16 +122,18 @@ class Implementations():
         ## send message to realtor ##
         #############################
 
-        # get recipient listing owner from database
-        listing_owners_collection_obj = ListingOwners(self.__db__)
-        listing_owners_obj = listing_owners_collection_obj.gell_all_listing_owners_phone_numbers()
-        listing_owners_obj_id = listing_owners_obj['_id']
-        listing_owners_obj_phone = listing_owners_obj['phone']
-
         ## TODO: do not retrieve from database
         twilio_conversations_instance = TwilioConvertations(self.__db__)
         twilio_conversation = twilio_conversations_instance.get_conversation_by_id(conversation_id)
         twilio_conversation_id = twilio_conversation['_id']
+        listing_owner_id = twilio_conversation['listing_owner_id']
+
+        # get recipient listing owner from database
+        listing_owners_collection_obj = ListingOwners(self.__db__)
+        listing_owners_obj = listing_owners_collection_obj.get_listing_owner_phone_by_id(listing_owner_id)
+        listing_owners_obj_phone = listing_owners_obj['phone']
+
+
 
         # save message in database
         messages_collection_obj.save_message('user', listing_owners_obj_phone, user_id, cleaned_text, False, None, twilio_conversation_id , 'SMS')

@@ -42,6 +42,16 @@ class ListingOwners():
         print listing_owners_list
         return listing_owners_list
 
+    # returns a particular listing owner
+    def get_listing_owner_phone_by_id(self, listing_owner_id):
+        filter_object = {'_id': ObjectId(listing_owner_id)}
+        fields_object = {'_id': 0, 'phone':1}
+        listing_owners_object = self.__collectionObject__.find_one(filter_object,fields_object)
+        if listing_owners_object is not None:
+            return listing_owners_object['phone']
+        else:
+            return None
+
     def add_test_data(self):
         # from user to listing owners
         listing_owner_1 = {'_id': ObjectId('5349b4ddd2781d08c09890f1'), 'fullname': 'Gerald K. Ramey'   , 'email': 'GeraldKRamey@rhyta.com'     , 'phone': '717-892-5401'}
