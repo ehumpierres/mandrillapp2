@@ -145,14 +145,18 @@ def save_received_user_mandrill_email():
         mandrill_message_text = mandrill_message['text']
         mandrill_message_from_email = mandrill_message['from_email']
 
-        print "mandrill_message_text"
-        print mandrill_message_text
-        print "mandrill_message_from_email"
-        print mandrill_message_from_email
+        #print "mandrill_message_text"
+        #print mandrill_message_text
+        #print "mandrill_message_from_email"
+        #print mandrill_message_from_email
 
-        if (mandrill_message_text is not None) and (mandrill_message_from_email is not None):
+        separator_string = "## Please do not write below this line ##"
+
+        mandrill_message_reply_text = mandrill_message_text.split(str=separator_string)[0]
+
+        if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None):
             implementations_instance = Implementations()
-            implementations_instance.save_received_user_mandrill_email(mandrill_message_text, mandrill_message_from_email)
+            implementations_instance.save_received_user_mandrill_email(mandrill_message_reply_text, mandrill_message_from_email)
             return Response()
         else:
             abort(500)
