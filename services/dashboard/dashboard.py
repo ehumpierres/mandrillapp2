@@ -154,7 +154,11 @@ def save_received_user_mandrill_email():
         conversation_separator_string = "CONVERSATION_ID###"
 
         mandrill_message_reply_text = mandrill_message_text.split(separator_string)[0]
-        conversation_id_string = mandrill_message_text.split(conversation_separator_string)[1]
+        print "mandrill_message_reply_text"
+        print mandrill_message_reply_text
+        conversation_id_string = mandrill_message_text.split(conversation_separator_string)[0]
+        print "conversation_id_string"
+        print conversation_id_string
 
         print "conversation_id_string"
         print conversation_id_string
