@@ -163,7 +163,7 @@ class Implementations():
         # sent email to user telling that have received a new message from realtor
         mandrill_instance = MandrillUtils()
         # TODO: set the proper url and avoid sending conversation_id
-        mandrill_instance.send_received_message_notification_template_to_user(user_name, user_email, body, "www.google.com",conversation_obj_id )
+        mandrill_instance.send_received_message_notification_template_to_user(user_name, user_email, body, "www.google.com", str(conversation_obj_id) )
 
 
         return True
