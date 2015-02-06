@@ -7,5 +7,5 @@ class StringUtils():
     
     # clear line breaks
     @staticmethod
-    def clear_line_breaks(self, text):
+    def clear_line_breaks(text):
         return text.replace('\n', ' ').replace('\r', '')
