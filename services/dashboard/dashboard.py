@@ -171,6 +171,7 @@ def save_received_user_mandrill_email():
         else:
             abort(500)
         """
+        return Response()
     except Exception as e:
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
