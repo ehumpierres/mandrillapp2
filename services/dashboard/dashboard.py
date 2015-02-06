@@ -138,9 +138,10 @@ def get_unread_notifications(user_id = None):
 
 @dashboard_api.route('/mandrillreplies', methods=['POST'])
 def save_received_user_mandrill_email():
+    print "save_received_user_mandrill_email"
+    return Response()
+    """
     try:
-        print "save_received_user_mandrill_email"
-        """
         mandrill_events = request.form.get('mandrill_events')
         mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
         mandrill_message_text = mandrill_message['text']
@@ -170,12 +171,12 @@ def save_received_user_mandrill_email():
             return Response()
         else:
             abort(500)
-        """
         return Response()
     except Exception as e:
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
         abort(500)
+    """
 
 
 @dashboard_api.route('/twiliomessages', methods=['POST'])
