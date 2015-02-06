@@ -151,12 +151,17 @@ def save_received_user_mandrill_email():
         #print mandrill_message_from_email
 
         separator_string = "## Please do not write below this line ##"
+        conversation_separator_string = "CONVERSATION_ID###"
 
         mandrill_message_reply_text = mandrill_message_text.split(separator_string)[0]
+        conversation_id_string = mandrill_message_text.split(conversation_separator_string)[1]
 
-        if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None):
+        print "conversation_id_string"
+        print conversation_id_string
+
+        if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None)and (conversation_id_string is not None):
             implementations_instance = Implementations()
-            implementations_instance.save_received_user_mandrill_email(mandrill_message_reply_text, mandrill_message_from_email)
+            implementations_instance.save_received_user_mandrill_email(mandrill_message_reply_text, mandrill_message_from_email, conversation_id_string )
             return Response()
         else:
             abort(500)

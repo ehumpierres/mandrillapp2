@@ -15,6 +15,10 @@ class TwilioConvertations():
         conversation_object = self.__collectionObject__.find_one({'user_id': user_id, 'listing_owner_id': listing_owner_id, 'status': 'active'})
         return conversation_object
 
+    def get_conversation_by_id(self, conversation_id):
+        conversation_object = self.__collectionObject__.find_one({'_id': ObjectId(conversation_id)})
+        return conversation_object
+
      # return user
     def get_conversation_by_phone(self, twilio_number, listing_owner_number):
         print "twilio_number"

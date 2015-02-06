@@ -100,7 +100,7 @@ class Implementations():
 
         return True
 
-    def save_received_user_mandrill_email(self, email_content, from_email):
+    def save_received_user_mandrill_email(self, email_content, from_email, conversation_id):
 
         ################
         ## save email ##
@@ -128,9 +128,9 @@ class Implementations():
         listing_owners_obj_id = listing_owners_obj['_id']
         listing_owners_obj_phone = listing_owners_obj['phone']
 
+        ## TODO: do not retrieve from database
         twilio_conversations_instance = TwilioConvertations(self.__db__)
-        twilio_conversation = twilio_conversations_instance.get_conversation_by_user_and_listing_owner_ids(user_id, listing_owners_obj_id)
-
+        twilio_conversation = twilio_conversations_instance.get_conversation_by_id(conversation_id)
         twilio_conversation_id = twilio_conversation['_id']
 
         # save message in database
@@ -162,8 +162,8 @@ class Implementations():
 
         # sent email to user telling that have received a new message from realtor
         mandrill_instance = MandrillUtils()
-        # TODO: set the proper url
-        mandrill_instance.send_received_message_notification_template_to_user(user_name, user_email, body, "www.google.com")
+        # TODO: set the proper url and avoid sending conversation_id
+        mandrill_instance.send_received_message_notification_template_to_user(user_name, user_email, body, "www.google.com",conversation_obj_id )
 
 
         return True

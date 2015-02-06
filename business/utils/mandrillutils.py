@@ -26,7 +26,7 @@ class MandrillUtils():
         print self.__api_key__
 
     # send mew message received to user using mandrill template
-    def send_received_message_notification_template_to_user(self, user_name, user_email, message_content, message_url):
+    def send_received_message_notification_template_to_user(self, user_name, user_email, message_content, message_url, conversation_id):
         template_name = self.__received_message_notification_template_name__
         subject = self.__received_message_notification_template_subject__
         sender_email = 'reply@inbound.gotrotter.com'
@@ -34,7 +34,8 @@ class MandrillUtils():
         template_user_merge_vars = [
             {"name": "USER_NAME", "content": user_name},
             {"name": "MESSAGE_CONTENT", "content": message_content},
-            {"name": "MESSAGE_URL", "content": message_url}
+            {"name": "MESSAGE_URL", "content": message_url},
+            {"name": "CONVERSATION_ID", "content": conversation_id}
         ]
         self.__send_template__(template_name, sender_email, sender_name, user_email, user_name, subject,  template_user_merge_vars)
 
