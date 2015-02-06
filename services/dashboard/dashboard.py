@@ -140,6 +140,7 @@ def get_unread_notifications(user_id = None):
 def save_received_user_mandrill_email():
     try:
         print "save_received_user_mandrill_email"
+        """
         mandrill_events = request.form.get('mandrill_events')
         mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
         mandrill_message_text = mandrill_message['text']
@@ -169,6 +170,7 @@ def save_received_user_mandrill_email():
             return Response()
         else:
             abort(500)
+        """
     except Exception as e:
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
