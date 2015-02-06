@@ -152,7 +152,7 @@ def save_received_user_mandrill_email():
 
         separator_string = "## Please do not write below this line ##"
 
-        mandrill_message_reply_text = mandrill_message_text.split(str=separator_string)[0]
+        mandrill_message_reply_text = mandrill_message_text.split(separator_string)[0]
 
         if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None):
             implementations_instance = Implementations()
