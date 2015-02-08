@@ -1,29 +1,205 @@
+import ConfigParser
+
 from persistence.mongodatabase import mongoDatabase
 from pymongo import MongoClient
 
+# utils
 from business.utils.mailsender import MailSender
+from business.utils.twilioutils import TwilioUtils
+from business.utils.mandrillutils import MandrillUtils
+from business.utils.stringutils import StringUtils
 
 from business.implementations.pointcalculator import PointCalculator
 
+# persistence collections
 from persistence.collections.listings import Listings
 from persistence.collections.listingoptions import ListingOptions
 from persistence.collections.neighborhoods import Neighborhoods
+from persistence.collections.notifications import Notifications
+from persistence.collections.listingowners import ListingOwners
+from persistence.collections.messages import Messages
+from persistence.collections.users import Users
+from persistence.collections.preferences import Preferences
+from persistence.collections.calibrations import Calibrations
+from persistence.collections.twilionumbers import TwilioNumbers
+from persistence.collections.twilioconverstations import TwilioConvertations
+
+
 
 
 class Implementations():
     def __init__(self):
 
+        # TODO: improve the way this vars are loaded
         # load constants
-        self.__MONGO_URL__ = "mongodb://jhon:1234@kahana.mongohq.com:10066/app30172457"
-        self.__MONGO_DB__ = "app30172457"
+        config = ConfigParser.ConfigParser()
+        config.read("config.cfg")
+        mongo_section = 'mongo_config'
 
-        # self.__MONGO_URL__ = "mongodb://jhon:jhon@dogen.mongohq.com:10021/app31380057"
-        # self.__MONGO_DB__ = "app31380057"
-
+        # load constants
+        self.__MONGO_URL__ = config.get(mongo_section, 'url')
+        self.__MONGO_DB__ = config.get(mongo_section, 'db')
 
         # init db connection
         self.__myDB__ = mongoDatabase(self.__MONGO_URL__)
         self.__db__ = self.__myDB__.getDB(self.__MONGO_DB__)
+
+    def save_preferences(self, fullname, email, phone, budget, bedrooms, city):
+
+        # build user object to be stored in the database
+        user_object = {'fullname': fullname, 'email': email, 'phone': phone}
+
+        ## save user in the database
+        user_collection_obj = Users(self.__db__)
+        user_id = user_collection_obj.save_user(user_object)
+
+        # build preference object to be stored in the database
+        preference_object = {'user_id': user_id, 'budget': budget, 'bedrooms': bedrooms, 'city': city}
+
+        ## save preference in the database
+        preference_collection_obj = Preferences(self.__db__)
+        preference_collection_obj.save_preference(preference_object)
+
+        # TODO: do the broadcast in a different thread asynchronously for improving performance
+        # get random free twilio number
+        twilio_numbers_instance = TwilioNumbers(self.__db__)
+        twilio_number = twilio_numbers_instance.get_random_available_number_and_mark_as_unavailable()
+        print "twilio_number"
+        print twilio_number
+
+        twilio_utils_instance = TwilioUtils()
+        # buy a new number from twilio
+        if twilio_number is None:
+            twilio_number = twilio_utils_instance.search_and_buy_number()
+
+
+        # get listing owners from database
+        listing_owners_collection_obj = ListingOwners(self.__db__)
+        retrieved_listing_owners = listing_owners_collection_obj.gell_all_listing_owners()
+
+        print "retrieved_listing_owners"
+        print retrieved_listing_owners
+
+        for retrieved_listing_owner in retrieved_listing_owners:
+            retrieved_listing_owners_id = retrieved_listing_owner['_id']
+            retrieved_listing_owners_phone_number = retrieved_listing_owner['phone']
+            # get random free twilio number
+            twilio_conversations_instance = TwilioConvertations(self.__db__)
+            twilio_conversation_id = twilio_conversations_instance.add_conversation(twilio_number, retrieved_listing_owners_phone_number, user_id, retrieved_listing_owners_id)
+            print "twilio_conversation_id"
+            print twilio_conversation_id
+
+            # builds message to be sent to the realtors
+            message = "I'm looking for an apartment. Budget: " + str(budget) + ", bedrooms: " + str(bedrooms) + ", city: " + city
+            # send broadcast using twilio
+            twilio_utils_instance.send_message_to_number(message, twilio_number, retrieved_listing_owners_phone_number)
+
+            #save sent message in the db
+            messages_collection_obj = Messages(self.__db__)
+            messages_collection_obj.save_message('user', retrieved_listing_owners_phone_number, None , user_id, message, True, None, twilio_conversation_id, 'SMS')
+
+        return True
+
+    def save_received_user_mandrill_email(self, email_content, from_email, conversation_id):
+
+        ################
+        ## save email ##
+        ################
+
+        # get info from user
+        users_collection_obj = Users(self.__db__)
+        user_id = users_collection_obj.get_user_id_by_email(from_email)
+
+        # clean line brakes from text
+        cleaned_text = StringUtils.clear_line_breaks(email_content)
+
+        # add messages in database
+        messages_collection_obj = Messages(self.__db__)
+        messages_collection_obj.save_email('user', from_email, user_id, cleaned_text)
+
+
+        #############################
+        ## send message to realtor ##
+        #############################
+
+        ## TODO: do not retrieve from database
+        twilio_conversations_instance = TwilioConvertations(self.__db__)
+        twilio_conversation = twilio_conversations_instance.get_conversation_by_id(conversation_id)
+        twilio_conversation_id = twilio_conversation['_id']
+        listing_owner_id = twilio_conversation['listing_owner_id']
+
+        # get recipient listing owner from database
+        listing_owners_collection_obj = ListingOwners(self.__db__)
+        listing_owners_obj = listing_owners_collection_obj.get_listing_owner_phone_by_id(listing_owner_id)
+        listing_owners_obj_phone = listing_owners_obj['phone']
+
+
+
+        # save message in database
+        messages_collection_obj.save_message('user', listing_owners_obj_phone, user_id, cleaned_text, False, None, twilio_conversation_id , 'SMS')
+
+        # send message using twilio
+        twilio_utils_instance = TwilioUtils()
+        twilio_utils_instance.send_message_to_number(cleaned_text, listing_owners_obj_phone, listing_owners_obj_phone)
+
+        return True
+
+    def save_realtor_twilio_message(self, sid, from_number, to_number, body):
+
+        # get conversation
+        conversation_collection_obj = TwilioConvertations(self.__db__)
+        conversation_obj = conversation_collection_obj.get_conversation_by_phone(to_number, from_number)
+        conversation_obj_id = conversation_obj['_id']
+        user_id = conversation_obj['user_id']
+
+        #save sent message in the db
+        messages_collection_obj = Messages(self.__db__)
+        messages_collection_obj.save_message('listing_owner', from_number, to_number, user_id, body, False, sid, str(conversation_obj_id), 'SMS')
+
+        # get info from user
+        users_collection_obj = Users(self.__db__)
+        users_obj = users_collection_obj.get_user_by_id(user_id)
+        user_name = users_obj['fullname']
+        user_email = users_obj['email']
+
+        # sent email to user telling that have received a new message from realtor
+        mandrill_instance = MandrillUtils()
+        # TODO: set the proper url and avoid sending conversation_id
+        mandrill_instance.send_received_message_notification_template_to_user(user_name, user_email, body, "www.google.com", str(conversation_obj_id) )
+
+
+        return True
+
+    def get_unread_notifications(self, user_id):
+        notifications_collection_obj = Notifications(self.__db__)
+        return notifications_collection_obj.get_unread_notifications(user_id)
+
+    def load_notifications_test_data(self):
+        notifications_collection_obj = Notifications(self.__db__)
+        notifications_collection_obj.add_test_data()
+
+    def load_all_database_test_data(self):
+        self.load_users_test_data()
+        self.load_listing_owners_test_data()
+        self.load_messages_test_data()
+        self.load_notifications_test_data()
+
+    def load_users_test_data(self):
+        users_collection_obj = Users(self.__db__)
+        users_collection_obj.add_test_data()
+
+    def load_listing_owners_test_data(self):
+         ## get calibration value
+        listing_owners_collection_obj = ListingOwners(self.__db__)
+        listing_owners_collection_obj.add_test_data()
+
+    def load_messages_test_data(self):
+        messages_collection_obj = Messages(self.__db__)
+        messages_collection_obj.add_test_data()
+
+    def load_calibrations_test_data(self):
+        calibrations_collection_obj = Calibrations(self.__db__)
+        calibrations_collection_obj.add_test_data()
 
     def update_neighborhood_info(self, listing_id=None, neighborhoods_coords=None):
         return_success = False
@@ -185,5 +361,3 @@ class Implementations():
             returnSuccess = True
 
         return returnSuccess
-        
-        

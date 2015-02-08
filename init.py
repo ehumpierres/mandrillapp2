@@ -45,6 +45,9 @@ from services.listings.getlistingsdetails import get_listing_details_api
 from services.preferences.savepreferences import save_preferences_api
 from services.preferences.getpreferences import get_preferences_api
 
+#dashboard
+from services.dashboard.dashboard import dashboard_api
+
 # init flask app
 app = Flask(__name__)
 
@@ -75,10 +78,12 @@ app.register_blueprint(get_user_lists_api)
 app.register_blueprint(validate_user_api)
 app.register_blueprint(delete_applylist_api)
 app.register_blueprint(get_early_access_api)
+app.register_blueprint(dashboard_api)
 
 
 @app.route('/')
 def deploy_success():
+    print "This application has deployed successfully"
     return 'This application has deployed successfully.'
 
 
