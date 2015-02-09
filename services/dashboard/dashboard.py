@@ -139,18 +139,14 @@ def get_unread_notifications(user_id = None):
 @dashboard_api.route('/mandrillreplies', methods=['GET','POST','HEAD']) #Let's try this again 45768
 def save_received_user_mandrill_email():
     
-    print "save_received_user_mandrill_email"
-    return "was this succesful?"
-
     
+    #try:
+    mandrill_events = request.form.get('mandrill_events')
+    mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
+    mandrill_message_text = mandrill_message['text']
+    mandrill_message_from_email = mandrill_message['from_email']
 
-    """
-    try:
-        mandrill_events = request.form.get('mandrill_events')
-        mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
-        mandrill_message_text = mandrill_message['text']
-        mandrill_message_from_email = mandrill_message['from_email']
-
+     """   
         #print "mandrill_message_text"
         #print mandrill_message_text
         #print "mandrill_message_from_email"
@@ -182,6 +178,12 @@ def save_received_user_mandrill_email():
         print traceback.format_exc()
         abort(500)
      """   
+
+    print mandrill_message_text
+    return "was this succesful?"
+
+
+
 
 @dashboard_api.route('/twiliomessages', methods=['POST'])
 def save_received_realtor_twilio_messages():
