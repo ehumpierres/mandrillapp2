@@ -141,12 +141,12 @@ def save_received_user_mandrill_email():
     
     
     #try:
-    mandrill_events = request.form.get('mandrill_events')
-    mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
-    mandrill_message_text = mandrill_message['text']
-    mandrill_message_from_email = mandrill_message['from_email']
+    #mandrill_events = request.form.get('mandrill_events')
+    #mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
+    #mandrill_message_text = mandrill_message['text']
+    #mandrill_message_from_email = mandrill_message['from_email']
 
-    print mandrill_message_text
+    print "Just testing"
     return "was this succesful?"
 
 
