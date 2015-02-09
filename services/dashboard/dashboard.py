@@ -147,10 +147,10 @@ def save_received_user_mandrill_email():
     #mandrill_message_from_email = mandrill_message['from_email']
 
     print "Just testing"
-    return "was this succesful?"
+    return "was this succesful?"  
 
 
-     """   
+    """   
         #print "mandrill_message_text"
         #print mandrill_message_text
         #print "mandrill_message_from_email"
@@ -181,7 +181,7 @@ def save_received_user_mandrill_email():
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
         abort(500)
-     """   
+    """   
 
     
 
