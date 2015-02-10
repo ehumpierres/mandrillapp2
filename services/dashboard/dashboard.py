@@ -146,7 +146,7 @@ def save_received_user_mandrill_email():
     mandrill_message_text = mandrill_message['text']
     mandrill_message_from_email = mandrill_message['from_email']
 
-    print madrill_text
+    print mandrill_message_text
     print "Just testing"
     return "was this succesful?"  
 
