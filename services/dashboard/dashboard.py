@@ -150,33 +150,34 @@ def save_received_user_mandrill_email():
     #print "Just testing"
     
 
-    separator_string = "## Please do not write below this line ##"
-    conversation_separator_string = "CONVERSATION_ID###"
+    separator_string = "## Please do not write below this line ##"  #THIS WORKS
+    conversation_separator_string = "CONVERSATION_ID###"    #THIS WORKS
 
-    mandrill_message_reply_list = mandrill_message_text.split(separator_string)
-    mandrill_message_reply_text = mandrill_message_reply_list[0]
-    text_for_conversation = mandrill_message_reply_list[1]
-    conversation_split_list = text_for_conversation.split(conversation_separator_string)
-    conversation_id_string = conversation_split_list[1]
+    mandrill_message_reply_list = mandrill_message_text.split(separator_string) #THIS WORKS 
+    mandrill_message_reply_text = mandrill_message_reply_list[0]          #THIS WORKS
+    text_for_conversation = mandrill_message_reply_list[1]               #THIS WORKS 
+    conversation_split_list = text_for_conversation.split(conversation_separator_string) #THIS WORKS
+    conversation_id_string = conversation_split_list[1]                   #THIS WORKS
      
     print mandrill_message_reply_text
     print conversation_id_string
 
-    """
-        if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None)and (conversation_id_string is not None):
-            implementations_instance = Implementations()
-            implementations_instance.save_received_user_mandrill_email(mandrill_message_reply_text, mandrill_message_from_email, conversation_id_string )
-            return Response()
-        else:
-            abort(500)
+    
+    if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None) and (conversation_id_string is not None):
+        implementations_instance = Implementations()
+        implementations_instance.save_received_user_mandrill_email(mandrill_message_reply_text, mandrill_message_from_email, conversation_id_string )
         return Response()
+    else:
+        abort(500)
+        return Response()
+
+    """
     except Exception as e:
         print "There was an unexpected error: ", str(e)
         print traceback.format_exc()
         abort(500)
     """   
-
-    return "Just testing"    
+    #return "Just testing"    
 
 @dashboard_api.route('/twiliomessages', methods=['POST'])
 def save_received_realtor_twilio_messages():
