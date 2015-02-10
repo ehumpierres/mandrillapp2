@@ -141,36 +141,28 @@ def save_received_user_mandrill_email():
     
     
     #try:
-    mandrill_events = request.form.get('mandrill_events')
-    mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']
-    mandrill_message_text = mandrill_message['text']
-    mandrill_message_from_email = mandrill_message['from_email']
+    mandrill_events = request.form.get('mandrill_events')   #THIS WORKS EH
+    mandrill_message = jsonpickle.decode(mandrill_events)[0]['msg']  #THIS WORKS EH
+    mandrill_message_text = mandrill_message['text']         #THIS WORKS EH 
+    mandrill_message_from_email = mandrill_message['from_email']    #THIS WORKS EH
 
-    print mandrill_message_text
-    print "Just testing"
-    return "was this succesful?"  
+    #print mandrill_message_text
+    #print "Just testing"
+    
 
+    separator_string = "## Please do not write below this line ##"
+    conversation_separator_string = "CONVERSATION_ID###"
 
-    """   
-        #print "mandrill_message_text"
-        #print mandrill_message_text
-        #print "mandrill_message_from_email"
-        #print mandrill_message_from_email
+    mandrill_message_reply_list = mandrill_message_text.split(separator_string)
+    mandrill_message_reply_text = mandrill_message_reply_list[0]
+    text_for_conversation = mandrill_message_reply_list[1]
+    conversation_split_list = text_for_conversation.split(conversation_separator_string)
+    conversation_id_string = conversation_split_list[1]
+     
+    print mandrill_message_reply_text
+    print conversation_id_string
 
-        separator_string = "## Please do not write below this line ##"
-        conversation_separator_string = "CONVERSATION_ID###"
-
-        mandrill_message_reply_list = mandrill_message_text.split(separator_string)
-        mandrill_message_reply_text = mandrill_message_reply_list[0]
-        text_for_conversation = mandrill_message_reply_list[1]
-        conversation_split_list = text_for_conversation.split(conversation_separator_string)
-        conversation_id_string = conversation_split_list[1]
-
-        print "mandrill_message_reply_text"
-        print mandrill_message_reply_text
-        print "conversation_id_string"
-        print conversation_id_string
-
+    """
         if (mandrill_message_reply_text is not None) and (mandrill_message_from_email is not None)and (conversation_id_string is not None):
             implementations_instance = Implementations()
             implementations_instance.save_received_user_mandrill_email(mandrill_message_reply_text, mandrill_message_from_email, conversation_id_string )
@@ -184,7 +176,7 @@ def save_received_user_mandrill_email():
         abort(500)
     """   
 
-    
+    return "Just testing"    
 
 @dashboard_api.route('/twiliomessages', methods=['POST'])
 def save_received_realtor_twilio_messages():
